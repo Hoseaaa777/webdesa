@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx vite build",
     "lint": "oxlint",
-    "preview": "vite preview",
-    "postinstall": "chmod +x node_modules/.bin/*"
+    "preview": "vite preview"
   },
   "dependencies": {
     "framer-motion": "^12.42.2",
