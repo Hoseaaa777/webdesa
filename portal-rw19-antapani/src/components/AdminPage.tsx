@@ -205,9 +205,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       setIsLoggedIn(true);
       setErrorMsg("");
     } else {
-      setErrorMsg(
-        "Username atau password salah! (Default: admin / rw19antapani)",
-      );
+      setErrorMsg("Username atau password salah!");
     }
   };
 
