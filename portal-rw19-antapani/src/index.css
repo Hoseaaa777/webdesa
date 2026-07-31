@@ -1,5 +1,141 @@
-@import "tailwindcss";
+/* --- TEMA BURUAN SAE (URBAN FARMING) --- */
+:root {
+  --green-primary: #2e7d32;
+  --green-dark: #1b5e20;
+  --green-light: #e8f5e9;
+  --green-accent: #81c784;
+  --earth-brown: #6d4c41;
+  --bg-gradient: linear-gradient(180deg, #f2f9f4 0%, #ffffff 100%);
+}
 
-html {
-  scroll-behavior: smooth;
+/* Banner / Hero Section Adjustment */
+.hero-urban {
+  background:
+    linear-gradient(rgba(27, 94, 32, 0.85), rgba(27, 94, 32, 0.95)),
+    url("https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=1200")
+      center/cover;
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+/* Section Container */
+.buruan-sae-section {
+  background: var(--bg-gradient);
+  padding: 3rem 1.5rem;
+  border-radius: 16px;
+  margin: 2rem 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.buruan-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 2.5rem auto;
+}
+
+.buruan-badge {
+  background-color: var(--green-light);
+  color: var(--green-dark);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+/* Tab Navigation */
+.buruan-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  color: var(--green-primary);
+  border-bottom-color: var(--green-primary);
+}
+
+/* Card Grid Layout */
+.buruan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.buruan-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.buruan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.buruan-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.buruan-card-body {
+  padding: 1.25rem;
+}
+
+.buruan-card-tag {
+  background: var(--green-light);
+  color: var(--green-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.buruan-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: #1a202c;
+}
+
+.buruan-card-desc {
+  font-size: 0.875rem;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.buruan-list-item {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 10px;
+  border-left: 5px solid var(--green-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1rem;
 }

@@ -1,588 +1,674 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  MapPin,
-  ShoppingBag,
-  Video,
-  MessageSquare,
   ShieldCheck,
   Leaf,
-  Send,
+  ShoppingBag,
+  Newspaper,
+  Video,
   ExternalLink,
-  X,
-  Radio,
+  MessageSquare,
+  Users,
+  Send,
   CheckCircle2,
   Phone,
-  Store,
-  Tag,
-  Newspaper,
-  Users,
+  X,
+  AlertTriangle,
+  Lock,
 } from "lucide-react";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
+import { BuruanSaeSection } from "./components/BuruanSaeSection";
+import { AdminPage } from "./components/AdminPage";
+import type { Pengaduan } from "./components/AdminPage";
+import "./App.css";
 
-// Data Dummy Statistik (Recharts)
-const dataDemografi = [
-  { name: "Usia Produktif (18-59)", value: 650 },
-  { name: "Anak-Anak / Remaja (0-17)", value: 320 },
-  { name: "Lanjut Usia (60+)", value: 180 },
-];
-const COLORS = ["#10b981", "#3b82f6", "#f59e0b"];
+// Interface Data
+interface BeritaItem {
+  id: number;
+  judul: string;
+  kategori: string;
+  tanggal: string;
+  desc: string;
+  image: string;
+}
 
-// Data Dummy Berita & Mading Digital
-const beritaList = [
+interface CctvItem {
+  id: number;
+  name: string;
+  loc: string;
+  img: string;
+}
+
+// Data Dummy Awal Pengaduan Warga
+const DUMMY_PENGADUAN: Pengaduan[] = [
   {
-    id: 1,
-    judul: "Panen Raya Kebun Hidroponik Buruan Sae RW 19 Antapani Tengah",
-    tanggal: "22 Juli 2026",
-    kategori: "Buruan Sae",
-    gambar:
-      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=600&auto=format&fit=crop&q=80",
-    ringkasan:
-      "Warga RW 19 berhasil memanen lebih dari 50 kg sayuran segar organik siap saji.",
-    isi: "Kelompok Wanita Tani (KWT) RW 19 Antapani Tengah mengadakan panen raya hasil pemanfaatan pekarangan Buruan Sae. Hasil panen berupa kangkung, bayam merah, dan pakcoy didistribusikan kepada warga lokal serta dipasarkan melalui etalase UMKM portal digital RW 19.",
+    id: "1",
+    nama: "Budi Santoso",
+    rt: "02",
+    pesan:
+      "Lampu penerangan jalan utama dekat kebun hidroponik redup, mohon dicek pengurus.",
+    tanggal: "29 Juli 2026",
+    status: "Diproses",
   },
   {
-    id: 2,
-    judul: "Kerja Bakti Penataan Saluran Air & Pemilahan Sampah Organik",
-    tanggal: "19 Juli 2026",
-    kategori: "Lingkungan",
-    gambar:
-      "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80",
-    ringkasan:
-      "Aksi gotong royong warga RW 19 membersihkan drainase utama dan pembuatan kompos.",
-    isi: "Dalam rangka menjaga kebersihan lingkungan dan mengolah limbah rumah tangga, pengurus RW 19 menggerakkan kerja bakti serentak. Selain membersihkan saluran air, warga diajarkan teknik biopori dan pemilahan sampah organik untuk pupuk kebun Buruan Sae.",
-  },
-  {
-    id: 3,
-    judul: "Pemasangan Titik CCTV Baru di Sektor Pertigaan Pos Ronda 2",
-    tanggal: "14 Juli 2026",
-    kategori: "Keamanan",
-    gambar:
-      "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600&auto=format&fit=crop&q=80",
-    ringkasan:
-      "Peningkatan fasilitas keamanan lingkungan terpantau 24 jam secara real-time.",
-    isi: "Tim Keamanan RW 19 bersama warga meresmikan penambahan titik kamera CCTV publik di area rawan keramaian. Kamera ini terintegrasi langsung dengan portal web RW 19 sehingga memudahkan pemantauan wilayah secara daring.",
+    id: "2",
+    nama: "Ibu Ratna",
+    rt: "01",
+    pesan:
+      "Jadwal pengambilan sampah organik RT 01 apakah bisa dipercepat setiap pagi?",
+    tanggal: "27 Juli 2026",
+    status: "Menunggu",
   },
 ];
 
-// Data Dummy UMKM
-const umkmList = [
+// Data Demografi
+const DEMOGRAFI_PIE = [
+  {
+    name: "Usia Produktif",
+    value: 650,
+    percent: "56.5%",
+    color: "#00a86b",
+    desc: "18–59 thn — Penggerak utama ekonomi UMKM & kebun Buruan Sae.",
+  },
+  {
+    name: "Anak & Remaja",
+    value: 320,
+    percent: "27.8%",
+    color: "#2563eb",
+    desc: "0–17 thn — Generasi muda pelajar & aktif Karang Taruna.",
+  },
+  {
+    name: "Lanjut Usia",
+    value: 180,
+    percent: "15.7%",
+    color: "#f59e0b",
+    desc: "60+ thn — Terdata dalam program kesehatan Posyandu Lansia.",
+  },
+];
+
+// Data UMKM
+const UMKM_DATA = [
   {
     id: 1,
     nama: "Hidroponik Buruan Sae 19",
     kategori: "Pertanian",
     harga: "Rp 10.000 / ikat",
-    penjual: "Ibu Nurhayati (KWT RT 02)",
-    kontak: "6281234567890",
-    deskripsi:
-      "Sayuran segar organik bebas pestisida dipetik langsung dari kebun Buruan Sae RW 19. Tersedia bayam, kangkung, pakcoy, dan selada.",
-    image: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=500",
+    desc: "Sayuran segar organik bebas pestisida dipetik langsung dari kebun Buruan Sae RW 19.",
+    image:
+      "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: 2,
     nama: "Olahan Sambal Buruan Sae",
     kategori: "Kuliner",
     harga: "Rp 25.000 / jar",
-    image: "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=500",
-    penjual: "Dapur Ibu Rina (RT 04)",
-    kontak: "6281298765432",
-    deskripsi:
-      "Sambal rumahan khas RW 19 buatan warga lokal menggunakan cabai pilihan hasil kebun sendiri. Tanpa bahan pengawet sintesis.",
+    desc: "Sambal rumahan khas RW 19 buatan warga lokal menggunakan cabai pilihan hasil kebun sendiri.",
+    image:
+      "https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: 3,
     nama: "Kerajinan Daur Ulang Kreatif",
     kategori: "Kreatif",
     harga: "Rp 50.000 / pcs",
-    image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500",
-    penjual: "Komunitas Kreatif Ibu PKK",
-    kontak: "6285712341234",
-    deskripsi:
-      "Aneka pot bunga hias, tempat tisu, dan tas cantik hasil pemanfaatan limbah plastik daur ulang ramah lingkungan warga Antapani.",
+    desc: "Aneka pot bunga hias, tempat tisu, dan tas cantik hasil pemanfaatan limbah plastik daur ulang.",
+    image:
+      "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&q=80&w=600",
   },
 ];
 
-// Data Dummy CCTV
-const cctvList = [
+// Data Berita
+const BERITA_DATA: BeritaItem[] = [
   {
     id: 1,
-    nama: "Kamera 01 - Pos Utama RW 19",
-    lokasi: "Gapura Masuk Utama RT 01",
-    status: "LIVE",
-    pengawas: "Tim Ronda Pos 1",
-    preview:
-      "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&auto=format&fit=crop&q=80",
+    judul: "Gotong Royong Kebun Buruan Sae RT 02",
+    kategori: "Kegiatan Warga",
+    tanggal: "28 Juli 2026",
+    desc: "Seluruh pengurus KWT dan warga RT 02 bahu-membahu merawat kebun bibit, pembersihan gulma, serta penambahan media tanam hidroponik NFT untuk persiapan panen raya minggu depan.",
+    image:
+      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: 2,
-    nama: "Kamera 02 - Kebun Buruan Sae",
-    lokasi: "Area Green House & Tanaman",
-    status: "LIVE",
-    pengawas: "KWT Buruan Sae 19",
-    preview:
-      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&auto=format&fit=crop&q=80",
+    judul: "Pelatihan Kompos Organik Dapur",
+    kategori: "Edukasi",
+    tanggal: "20 Juli 2026",
+    desc: "Pelatihan pemanfaatan limbah sisa sayur dan buah dapur menjadi pupuk kompos cair organik. Diikuti oleh ibu-ibu PKK RW 19 guna mendukung konsep Zero Waste di pemukiman.",
+    image:
+      "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: 3,
-    nama: "Kamera 03 - Lapangan Serbaguna",
-    lokasi: "Taman Olahraga Warga",
-    status: "LIVE",
-    pengawas: "Karang Taruna RW 19",
-    preview:
-      "https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=800&auto=format&fit=crop&q=80",
-  },
-  {
-    id: 4,
-    nama: "Kamera 04 - Pertigaan Gang 4",
-    lokasi: "Jalur Utama Gang 4 / Pos 2",
-    status: "LIVE",
-    pengawas: "Tim Ronda Pos 2",
-    preview:
-      "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&auto=format&fit=crop&q=80",
-  },
-  {
-    id: 5,
-    nama: "Kamera 05 - Pos Keamanan Barat",
-    lokasi: "Sektor Barat RW 19",
-    status: "OFFLINE",
-    pengawas: "Seksi Keamanan RW",
-    preview: "",
+    judul: "Panen Parsial Kolam Gizi Lele Bioflok",
+    kategori: "Panen Raya",
+    tanggal: "12 Juli 2026",
+    desc: "Hasil panen parsial ikan lele bioflok RT 04 didistribusikan secara gratis bagi para lansia dan balita sebagai bentuk pemenuhan gizi keluarga dan pencegahan stunting wilayah.",
+    image:
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=600",
   },
 ];
 
-// Data Dummy Aparat / Pengurus RW 19
-const aparatList = [
+// Data CCTV Publik
+const CCTV_DATA: CctvItem[] = [
   {
     id: 1,
-    nama: "H. Bambang Sutrisno",
-    jabatan: "Ketua RW 19",
-    foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
-    peran: "Pimpinan Wilayah",
+    name: "Kamera 01 - Pos Utama RW 19",
+    loc: "Gapura Masuk Utama RT 01",
+    img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: 2,
-    nama: "Drs. Eko Prasetyo",
-    jabatan: "Sekretaris RW 19",
-    foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
-    peran: "Administrasi & Data",
+    name: "Kamera 02 - Kebun Buruan Sae",
+    loc: "Area Green House & Tanaman RT 02",
+    img: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=600",
   },
   {
     id: 3,
-    nama: "Hj. Ratna Pertiwi",
-    jabatan: "Bendahara RW 19",
-    foto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
-    peran: "Keuangan & Kas",
-  },
-  {
-    id: 4,
-    nama: "Ahmad Suhendar",
-    jabatan: "Ketua Seksi Buruan Sae",
-    foto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80",
-    peran: "Pengembang Ketahanan Pangan",
+    name: "Kamera 03 - Lapangan Serbaguna",
+    loc: "Taman Olahraga Warga RT 04",
+    img: "https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&q=80&w=600",
   },
 ];
 
-function App() {
-  // State Modals
-  const [selectedCctv, setSelectedCctv] = useState<(typeof cctvList)[0] | null>(
-    null,
-  );
-  const [selectedUmkm, setSelectedUmkm] = useState<(typeof umkmList)[0] | null>(
-    null,
-  );
-  const [selectedBerita, setSelectedBerita] = useState<
-    (typeof beritaList)[0] | null
-  >(null);
-  const [showLaporSuccess, setShowLaporSuccess] = useState(false);
+// Data Aparat / Pengurus
+const APARAT_DATA = [
+  { nama: "H. Ahmad Fauzi", jabatan: "Ketua RW 19", kontak: "0811-2233-4455" },
+  {
+    nama: "Ibu Sri Wahyuni",
+    jabatan: "Ketua KWT Anggrek 19",
+    kontak: "0812-5566-7788",
+  },
+  { nama: "Bpk. Bambang S.", jabatan: "Ketua RT 02", kontak: "0813-8899-0011" },
+];
 
-  // Form State
-  const [formLapor, setFormLapor] = useState({ nama: "", pesan: "" });
+export default function App() {
+  // State Switching Halaman Utama vs Halaman Admin
+  const [currentPage, setCurrentPage] = useState<"public" | "admin">("public");
 
-  const handleSubmitLapor = (e: React.FormEvent) => {
+  // State Pop-Up Modals Publik
+  const [selectedBerita, setSelectedBerita] = useState<BeritaItem | null>(null);
+  const [selectedCctv, setSelectedCctv] = useState<CctvItem | null>(null);
+
+  // State Daftar Pengaduan Warga (Localstorage Sync)
+  const [pengaduanList, setPengaduanList] = useState<Pengaduan[]>(() => {
+    const saved = localStorage.getItem("rw19_pengaduan_list");
+    return saved ? JSON.parse(saved) : DUMMY_PENGADUAN;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("rw19_pengaduan_list", JSON.stringify(pengaduanList));
+  }, [pengaduanList]);
+
+  // State Form Pengaduan Publik
+  const [nama, setNama] = useState("");
+  const [rt, setRt] = useState("01");
+  const [pesan, setPesan] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmitPengaduan = (e: React.FormEvent) => {
     e.preventDefault();
-    setShowLaporSuccess(true);
-    setFormLapor({ nama: "", pesan: "" });
+    if (!nama || !pesan) return;
+
+    const newReport: Pengaduan = {
+      id: Date.now().toString(),
+      nama,
+      rt,
+      pesan,
+      tanggal: new Date().toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+      status: "Menunggu",
+    };
+
+    setPengaduanList([newReport, ...pengaduanList]);
+    setSubmitted(true);
+
+    setTimeout(() => {
+      setNama("");
+      setPesan("");
+      setSubmitted(false);
+    }, 4000);
   };
 
+  const handleUpdateStatus = (
+    id: string,
+    newStatus: "Menunggu" | "Diproses" | "Selesai",
+  ) => {
+    setPengaduanList((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, status: newStatus } : item,
+      ),
+    );
+  };
+
+  const handleDeletePengaduan = (id: string) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus laporan ini?")) {
+      setPengaduanList((prev) => prev.filter((item) => item.id !== id));
+    }
+  };
+
+  // JIKA SEDANG DI HALAMAN ADMIN
+  if (currentPage === "admin") {
+    return (
+      <AdminPage
+        pengaduanList={pengaduanList}
+        onUpdateStatus={handleUpdateStatus}
+        onDeletePengaduan={handleDeletePengaduan}
+        onBackToPublic={() => setCurrentPage("public")}
+      />
+    );
+  }
+
+  // TAMPILAN HALAMAN PUBLIK PORTAL WARGA
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-emerald-500 selection:text-white scroll-smooth">
-      {/* 1. NAVBAR DENGAN LOGO JABAR */}
-      <nav className="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-sm">
-        <div className="flex items-center gap-3">
-          <img
-            src="/logojabar.jpg"
-            alt="Logo Jawa Barat"
-            className="h-10 w-auto object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/logojabar.png";
-            }}
-          />
+    <div>
+      {/* 1. NAVBAR */}
+      <nav className="navbar">
+        <div className="nav-brand">
+          <div className="nav-logo-icon">
+            <Leaf color="#00a86b" size={24} />
+          </div>
           <div>
-            <span className="font-bold text-lg block text-emerald-800 leading-tight">
-              RW 19 Antapani Tengah
-            </span>
-            <span className="text-xs text-emerald-600 font-medium">
-              Program Buruan Sae
-            </span>
+            <h1 className="nav-title">RW 19 Antapani Tengah</h1>
+            <p className="nav-subtitle">Program Buruan Sae</p>
           </div>
         </div>
 
-        <div className="hidden lg:flex gap-6 font-medium text-slate-600 text-sm">
-          <a href="#hero" className="hover:text-emerald-600 transition">
-            Beranda
+        <div className="nav-menu">
+          <a href="#beranda">Beranda</a>
+          <a href="#profil">Profil</a>
+          <a href="#buruan-sae" style={{ color: "#00a86b", fontWeight: 800 }}>
+            Buruan Sae
           </a>
-          <a href="#profil" className="hover:text-emerald-600 transition">
-            Profil
-          </a>
-          <a href="#statistik" className="hover:text-emerald-600 transition">
-            Statistik
-          </a>
-          <a href="#umkm" className="hover:text-emerald-600 transition">
-            UMKM
-          </a>
-          <a href="#berita" className="hover:text-emerald-600 transition">
-            Berita
-          </a>
-          <a href="#cctv" className="hover:text-emerald-600 transition">
-            CCTV
-          </a>
-          <a href="#aparat" className="hover:text-emerald-600 transition">
-            Aparat
-          </a>
+          <a href="#statistik">Statistik</a>
+          <a href="#umkm">UMKM</a>
+          <a href="#berita">Berita</a>
+          <a href="#cctv">CCTV</a>
+          <a href="#aparat">Aparat</a>
         </div>
 
-        <a
-          href="#pengaduan"
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition flex items-center gap-2"
-        >
-          <MessageSquare className="w-4 h-4" />
-          Pengaduan Warga
-        </a>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <button
+            type="button"
+            onClick={() => setCurrentPage("admin")}
+            style={{
+              backgroundColor: "#f1f5f9",
+              color: "#334155",
+              border: "1px solid #cbd5e1",
+              fontSize: "0.825rem",
+              fontWeight: 700,
+              padding: "7px 14px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Lock size={14} color="#00a86b" /> Admin
+          </button>
+
+          <a href="#pengaduan" className="btn-pengaduan-nav">
+            <MessageSquare size={16} /> Pengaduan Warga
+          </a>
+        </div>
       </nav>
 
-      {/* 2. HERO SECTION */}
-      <section
-        id="hero"
-        className="relative bg-cover bg-center py-28 px-6 text-center overflow-hidden"
-        style={{
-          backgroundImage:
-            "url('/bg-hero.jpg'), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600')",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-emerald-950/80 to-slate-950/90 backdrop-blur-[2px]"></div>
-
-        <div className="max-w-4xl mx-auto relative z-10 text-white">
-          <span className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-200 text-xs font-semibold px-4 py-1.5 rounded-full border border-emerald-400/30 mb-4 backdrop-blur-md">
-            <Leaf className="w-3.5 h-3.5 text-emerald-300" /> Portal Digital
-            Wilayah RW 19
+      {/* 2. SECTION BERANDA */}
+      <header id="beranda" className="hero-urban">
+        <div className="hero-content">
+          <span className="hero-badge">
+            <Leaf size={14} /> Portal Resmi RW 19 Antapani Tengah
           </span>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-            Inovasi Mandiri Pangan & Digitalisasi <br />
-            <span className="text-emerald-300">"Buruan Sae" RW 19</span>
+          <h1 className="hero-title">
+            Mewujudkan Pemukiman Mandiri, Asri & Sehat Lewat{" "}
+            <span style={{ color: "#81c784" }}>Buruan Sae</span>
           </h1>
-          <p className="mt-4 text-emerald-100 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            Mewujudkan lingkungan RW 19 Antapani Tengah yang hijau, transparan,
-            aman, dan berdaya secara ekonomi melalui integrasi portal digital.
+          <p className="hero-sub">
+            Gerakan terintegrasi pemanfaatan pekarangan rumah, kebun gizi
+            hidroponik, dan kolam ikan bioflok untuk mendukung ketahanan pangan
+            keluarga warga RW 19.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <a
-              href="#umkm"
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 py-3 rounded-xl font-bold shadow-lg transition flex items-center gap-2"
-            >
-              <ShoppingBag className="w-4 h-4" /> Jelajahi UMKM
+          <div className="hero-actions">
+            <a href="#buruan-sae" className="btn-hero-primary">
+              🌱 Jelajahi Program Buruan Sae
             </a>
-            <a
-              href="#cctv"
-              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-xl font-bold transition flex items-center gap-2 backdrop-blur-md"
-            >
-              <Video className="w-4 h-4" /> Pantau CCTV
+            <a href="#pengaduan" className="btn-hero-secondary">
+              💬 Layanan Pengaduan Warga
             </a>
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* 3. PROFIL & GOOGLE MAPS EMBEDDED */}
-      <section id="profil" className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      {/* 3. PROFIL */}
+      <section id="profil" className="section-wrapper">
+        <div className="profil-container">
           <div>
-            <span className="text-emerald-600 font-bold text-sm uppercase tracking-wider">
-              Tentang Wilayah
-            </span>
-            <h2 className="text-3xl font-bold text-slate-900 mt-2">
+            <div className="section-tag">TENTANG WILAYAH</div>
+            <h2 className="section-header-title">
               Program Unggulan Buruan Sae
             </h2>
-            <p className="text-slate-600 mt-4 leading-relaxed">
+            <p
+              style={{ color: "#64748b", lineHeight: 1.6, fontSize: "0.95rem" }}
+            >
               RW 19 Antapani Tengah berfokus pada pemanfaatan pekarangan untuk
               ketahanan pangan keluarga (Buruan Sae). Melalui portal ini,
               informasi kegiatan warga, potensi ekonomi lokal, dan fasilitas
               keamanan terintegrasi secara digital.
             </p>
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center gap-3 text-slate-700">
-                <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                <span>Pemantauan Wilayah Lingkungan 24/7</span>
-              </div>
-              <div className="flex items-center gap-3 text-slate-700">
-                <Leaf className="w-5 h-5 text-emerald-600" />
-                <span>Pemberdayaan Kebun Organik Warga</span>
-              </div>
+            <div className="profil-bullet">
+              <ShieldCheck color="#00a86b" size={20} /> Pemantauan Wilayah
+              Lingkungan 24/7
+            </div>
+            <div className="profil-bullet">
+              <Leaf color="#00a86b" size={20} /> Pemberdayaan Kebun Organik
+              Warga
             </div>
           </div>
 
-          <div className="relative h-80 rounded-3xl overflow-hidden border border-slate-200/80 shadow-md group">
+          <div className="map-card-wrapper">
             <iframe
-              title="Peta Lokasi Antapani Tengah"
-              src="https://maps.google.com/maps?q=-6.9142,107.6588&z=15&output=embed"
-              className="w-full h-full border-0"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-
-            <a
-              href="https://maps.google.com/?q=Antapani+Tengah+Bandung"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="absolute bottom-3 right-3 bg-white/90 hover:bg-emerald-600 hover:text-white text-slate-800 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-bold shadow-lg transition flex items-center gap-1.5"
+              title="Peta RW 19 Antapani Tengah"
+              className="map-iframe"
+              src="https://maps.google.com/maps?q=Antapani%20Tengah%20Bandung&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            />
+            <div
+              style={{
+                padding: "10px",
+                textAlign: "right",
+                background: "#fff",
+              }}
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Buka Google Maps
-            </a>
+              <a
+                href="https://maps.google.com"
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  color: "#00a86b",
+                  textDecoration: "none",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                <ExternalLink size={14} /> Buka Google Maps
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. STATISTIK DEMOGRAFI (LENGKAP DENGAN DETIL PENJELASAN DATA) */}
+      {/* 4. MODUL BURUAN SAE */}
+      <div id="buruan-sae">
+        <BuruanSaeSection />
+      </div>
+
+      {/* 5. STATISTIK DEMOGRAFI */}
       <section
         id="statistik"
-        className="bg-white border-y border-slate-200 py-16 px-6"
+        className="section-wrapper"
+        style={{ textAlign: "center" }}
       >
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-emerald-600 font-bold text-sm uppercase tracking-wider">
-              Data Warga & Wilayah
-            </span>
-            <h2 className="text-3xl font-bold text-slate-900 mt-1">
-              Statistik Demografi Publik
-            </h2>
-            <p className="text-slate-500 text-xs mt-2">
-              Transparansi data kependudukan dan sebaran kelompok usia warga RW
-              19 Antapani Tengah
-            </p>
+        <div className="section-tag">DATA WARGA & WILAYAH</div>
+        <h2 className="section-header-title">Statistik Demografi Publik</h2>
+        <p className="section-header-sub">
+          Transparansi data kependudukan dan sebaran kelompok usia warga RW 19
+          Antapani Tengah
+        </p>
+
+        <div className="statistik-grid" style={{ textAlign: "left" }}>
+          <div className="stat-left-card">
+            <h3
+              style={{
+                fontSize: "1.05rem",
+                fontWeight: 700,
+                margin: "0 0 1.5rem 0",
+                color: "#1e293b",
+              }}
+            >
+              👥 Distribusi Kelompok Usia Penduduk
+            </h3>
+            <div className="donut-chart-container">
+              <div
+                style={{
+                  width: "200px",
+                  height: "180px",
+                  position: "relative",
+                }}
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={DEMOGRAFI_PIE}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={75}
+                    >
+                      {DEMOGRAFI_PIE.map((entry, idx) => (
+                        <Cell key={`cell-${idx}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    textAlign: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "1.1rem",
+                      fontWeight: 800,
+                      color: "#0f172a",
+                      display: "block",
+                    }}
+                  >
+                    1,150
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "0.65rem",
+                      color: "#64748b",
+                      fontWeight: 700,
+                    }}
+                  >
+                    TOTAL JIWA
+                  </span>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
+                }}
+              >
+                {DEMOGRAFI_PIE.map((item, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      background: "#fff",
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        fontSize: "0.85rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      <span style={{ color: item.color }}>● {item.name}</span>
+                      <span>{item.percent}</span>
+                    </div>
+                    <p
+                      style={{
+                        margin: "2px 0 0 0",
+                        fontSize: "0.75rem",
+                        color: "#64748b",
+                      }}
+                    >
+                      {item.value} Jiwa — {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6 items-stretch">
-            {/* Chart & Detail Breakdown Card */}
-            <div className="lg:col-span-2 bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200/80 flex flex-col justify-between">
-              <h3 className="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
-                <Users className="w-4 h-4 text-emerald-600" />
-                Distribusi Kelompok Usia Penduduk
-              </h3>
-
-              <div className="grid sm:grid-cols-2 gap-6 items-center">
-                {/* Donut Chart dengan Centered Text */}
-                <div className="h-60 relative flex items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={dataDemografi}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={85}
-                        paddingAngle={4}
-                        dataKey="value"
-                      >
-                        {dataDemografi.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(val: any) => [`${val} Jiwa`, "Jumlah"]}
-                        contentStyle={{
-                          borderRadius: "12px",
-                          border: "1px solid #e2e8f0",
-                          fontSize: "12px",
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-
-                  {/* Label Total Jiwa di Tengah Donut */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-2xl font-black text-slate-900">
-                      1,150
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                      Total Jiwa
-                    </span>
-                  </div>
-                </div>
-
-                {/* Rincian Kartu Penjelasan Usia */}
-                <div className="space-y-3">
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-emerald-300 transition">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>{" "}
-                        Usia Produktif
-                      </span>
-                      <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        56.5%
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                      <strong className="text-slate-700">650 Jiwa</strong>{" "}
-                      (18–59 thn) — Penggerak utama ekonomi UMKM & kegiatan
-                      kebun Buruan Sae.
-                    </p>
-                  </div>
-
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-300 transition">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>{" "}
-                        Anak & Remaja
-                      </span>
-                      <span className="text-xs font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-                        27.8%
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                      <strong className="text-slate-700">320 Jiwa</strong> (0–17
-                      thn) — Generasi muda pelajar & aktif dalam kegiatan Karang
-                      Taruna.
-                    </p>
-                  </div>
-
-                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-amber-300 transition">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>{" "}
-                        Lanjut Usia
-                      </span>
-                      <span className="text-xs font-extrabold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
-                        15.7%
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                      <strong className="text-slate-700">180 Jiwa</strong> (60+
-                      thn) — Terdata dalam program pemantauan kesehatan Posyandu
-                      Lansia.
-                    </p>
-                  </div>
-                </div>
+          <div className="stat-right-column">
+            <div className="stat-card-green">
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  letterSpacing: "0.05em",
+                  opacity: 0.9,
+                }}
+              >
+                TOTAL POPULASI TERDAFTAR
+              </span>
+              <div
+                style={{
+                  fontSize: "2.2rem",
+                  fontWeight: 800,
+                  margin: "0.25rem 0",
+                }}
+              >
+                1,150{" "}
+                <span style={{ fontSize: "1rem", fontWeight: 500 }}>Jiwa</span>
+              </div>
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  opacity: 0.9,
+                  margin: "0 0 1rem 0",
+                }}
+              >
+                Tersebar di 6 wilayah RT dengan tingkat kelengkapan data digital
+                warga mencapai <strong>98%</strong>.
+              </p>
+              <div
+                style={{
+                  borderTop: "1px solid rgba(255,255,255,0.2)",
+                  paddingTop: "0.75rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                }}
+              >
+                Rasio Gender:{" "}
+                <span style={{ fontWeight: 400 }}>51% Pria | 49% Wanita</span>
               </div>
             </div>
 
-            {/* Panel Ringkasan Kependudukan Sisi Kanan */}
-            <div className="flex flex-col justify-between gap-4">
-              <div className="bg-emerald-600 text-white p-6 rounded-3xl shadow-sm flex flex-col justify-between flex-1">
-                <div>
-                  <span className="text-xs text-emerald-100 font-bold uppercase tracking-wider">
-                    Total Populasi Terdaftar
-                  </span>
-                  <p className="text-4xl font-black text-white mt-1">
-                    1,150{" "}
-                    <span className="text-sm font-normal text-emerald-100">
-                      Jiwa
-                    </span>
-                  </p>
-                  <p className="text-xs text-emerald-100 mt-2 leading-relaxed">
-                    Tersebar di 6 wilayah RT dengan tingkat kelengkapan data
-                    digital warga mencapai{" "}
-                    <strong className="text-white">98%</strong>.
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-emerald-500 text-[11px] flex justify-between font-semibold text-emerald-100">
-                  <span>Rasio Gender:</span>
-                  <span className="text-white">51% Pria | 49% Wanita</span>
-                </div>
+            <div className="stat-card-white">
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  color: "#64748b",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                KEPALA KELUARGA (KK)
+              </span>
+              <div
+                style={{
+                  fontSize: "1.8rem",
+                  fontWeight: 800,
+                  color: "#0f172a",
+                  margin: "0.25rem 0",
+                }}
+              >
+                340{" "}
+                <span
+                  style={{
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    color: "#64748b",
+                  }}
+                >
+                  KK Aktif
+                </span>
               </div>
-
-              <div className="bg-white border border-slate-200/80 p-6 rounded-3xl shadow-sm space-y-3 flex-1 flex flex-col justify-between">
-                <div>
-                  <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">
-                    Kepala Keluarga (KK)
-                  </span>
-                  <p className="text-3xl font-extrabold text-slate-900 mt-1">
-                    340{" "}
-                    <span className="text-xs text-slate-500 font-normal">
-                      KK Aktif
-                    </span>
-                  </p>
-                </div>
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-xs text-slate-600 space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <span>KK Penerima Buruan Sae:</span>
-                    <strong className="text-emerald-700 font-bold">
-                      125 KK
-                    </strong>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Pelaku UMKM Terdata:</span>
-                    <strong className="text-emerald-700 font-bold">
-                      45 Usaha
-                    </strong>
-                  </div>
-                </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "0.8rem",
+                  marginTop: "0.75rem",
+                  color: "#475569",
+                }}
+              >
+                <span>KK Penerima Buruan Sae:</span>
+                <strong style={{ color: "#00a86b" }}>125 KK</strong>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "0.8rem",
+                  marginTop: "0.4rem",
+                  color: "#475569",
+                }}
+              >
+                <span>Pelaku UMKM Terdata:</span>
+                <strong style={{ color: "#00a86b" }}>45 Usaha</strong>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. KATALOG UMKM */}
-      <section id="umkm" className="max-w-6xl mx-auto px-6 py-16">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8">
-          <div>
-            <span className="text-emerald-600 font-bold text-sm uppercase tracking-wider">
-              Produk Lokal
-            </span>
-            <h2 className="text-3xl font-bold text-slate-900 mt-1">
-              Katalog UMKM Warga
-            </h2>
-            <p className="text-slate-500 text-xs mt-1">
-              Klik pada produk untuk melihat detail dan kontak penjual
-            </p>
-          </div>
-        </div>
+      {/* 6. KATALOG UMKM */}
+      <section
+        id="umkm"
+        className="section-wrapper"
+        style={{ textAlign: "center" }}
+      >
+        <div className="section-tag">PRODUK LOKAL</div>
+        <h2 className="section-header-title">Katalog UMKM Warga</h2>
+        <p className="section-header-sub">
+          Klik pada produk untuk melihat detail dan kontak penjual
+        </p>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {umkmList.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedUmkm(item)}
-              className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300 cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="relative overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.nama}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition duration-300"
-                  />
-                  <span className="absolute top-3 left-3 text-[10px] font-bold text-emerald-800 bg-emerald-100/90 backdrop-blur-sm px-2.5 py-1 rounded-md border border-emerald-200">
-                    {item.kategori}
-                  </span>
-                </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-slate-900 text-lg group-hover:text-emerald-600 transition line-clamp-1">
-                    {item.nama}
-                  </h3>
-                  <p className="text-emerald-700 font-extrabold text-sm mt-1">
-                    {item.harga}
-                  </p>
-                  <p className="text-slate-500 text-xs mt-2 line-clamp-2 leading-relaxed">
-                    {item.deskripsi}
-                  </p>
-                </div>
+        <div className="cards-grid-3" style={{ textAlign: "left" }}>
+          {UMKM_DATA.map((item) => (
+            <div key={item.id} className="umkm-card">
+              <div className="umkm-img-wrapper">
+                <img src={item.image} alt={item.nama} className="umkm-img" />
+                <span className="umkm-badge">{item.kategori}</span>
               </div>
-
-              <div className="px-5 pb-5 pt-0">
-                <button className="w-full bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold text-xs py-2.5 rounded-xl border border-emerald-200 transition flex items-center justify-center gap-1.5">
-                  <ShoppingBag className="w-3.5 h-3.5" /> Lihat Detail Produk
+              <div className="umkm-content">
+                <h3 className="umkm-title">{item.nama}</h3>
+                <div className="umkm-price">{item.harga}</div>
+                <p className="umkm-desc">{item.desc}</p>
+                <button
+                  type="button"
+                  className="btn-detail-light"
+                  onClick={() =>
+                    alert(
+                      `Detail produk ${item.nama} dapat dihubungi via RT/RW 19.`,
+                    )
+                  }
+                >
+                  <ShoppingBag size={16} /> Lihat Detail Produk
                 </button>
               </div>
             </div>
@@ -590,60 +676,271 @@ function App() {
         </div>
       </section>
 
-      {/* --- MODAL DETAIL UMKM --- */}
-      {selectedUmkm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-900 rounded-3xl max-w-xl w-full border border-emerald-100 overflow-hidden shadow-2xl relative">
-            <div className="relative">
-              <img
-                src={selectedUmkm.image}
-                alt={selectedUmkm.nama}
-                className="w-full h-56 object-cover"
-              />
-              <button
-                onClick={() => setSelectedUmkm(null)}
-                className="absolute top-3 right-3 bg-slate-900/70 hover:bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition backdrop-blur-sm"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <span className="absolute bottom-3 left-3 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                {selectedUmkm.kategori}
-              </span>
-            </div>
+      {/* 7. BERITA */}
+      <section
+        id="berita"
+        className="section-wrapper"
+        style={{ textAlign: "center" }}
+      >
+        <div className="section-tag">KABAR WILAYAH</div>
+        <h2 className="section-header-title">Mading & Berita Warga</h2>
+        <p className="section-header-sub">
+          Informasi kegiatan dan dokumentasi terkini dari RW 19
+        </p>
 
-            <div className="p-6 space-y-4">
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900">
-                  {selectedUmkm.nama}
-                </h3>
-                <p className="text-emerald-600 font-black text-xl mt-1">
-                  {selectedUmkm.harga}
+        <div className="cards-grid-3" style={{ textAlign: "left" }}>
+          {BERITA_DATA.map((item) => (
+            <div key={item.id} className="umkm-card">
+              <div className="umkm-img-wrapper">
+                <img src={item.image} alt={item.judul} className="umkm-img" />
+                <span className="umkm-badge">{item.kategori}</span>
+              </div>
+              <div className="umkm-content">
+                <h3 className="umkm-title">{item.judul}</h3>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#94a3b8",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  📅 {item.tanggal}
+                </div>
+                <p className="umkm-desc">{item.desc}</p>
+                <button
+                  type="button"
+                  className="btn-detail-light"
+                  onClick={() => setSelectedBerita(item)}
+                >
+                  <Newspaper size={16} /> Lihat Detail Berita
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* MODAL POP-UP BERITA */}
+      {selectedBerita && (
+        <div className="modal-overlay" onClick={() => setSelectedBerita(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="modal-close-btn"
+              onClick={() => setSelectedBerita(null)}
+            >
+              <X size={20} />
+            </button>
+            <img
+              src={selectedBerita.image}
+              alt={selectedBerita.judul}
+              className="modal-img"
+            />
+            <div className="modal-body">
+              <span className="umkm-badge" style={{ position: "static" }}>
+                {selectedBerita.kategori}
+              </span>
+              <h3 className="modal-title">{selectedBerita.judul}</h3>
+              <div
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#00a86b",
+                  fontWeight: 700,
+                  marginBottom: "0.75rem",
+                }}
+              >
+                📅 Terbit: {selectedBerita.tanggal}
+              </div>
+              <p className="modal-desc">{selectedBerita.desc}</p>
+
+              <div className="modal-info-box">
+                <p>
+                  📰 <strong>Sumber Berita:</strong> Tim Informasi &
+                  Digitalisasi RW 19
+                </p>
+                <p>
+                  📍 <strong>Lokasi Kegiatan:</strong> Wilayah RW 19 Antapani
+                  Tengah
                 </p>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-slate-700 font-semibold">
-                  <Store className="w-4 h-4 text-emerald-600" />
-                  <span>Pemilik: {selectedUmkm.penjual}</span>
-                </div>
-                <div className="flex items-start gap-2 text-slate-600 pt-1">
-                  <Tag className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <p className="leading-relaxed">{selectedUmkm.deskripsi}</p>
-                </div>
+              <button
+                type="button"
+                className="btn-modal-close"
+                onClick={() => setSelectedBerita(null)}
+              >
+                Tutup Berita
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 8. CCTV PUBLIK */}
+      <section
+        id="cctv"
+        className="cctv-dark-section"
+        style={{ textAlign: "center" }}
+      >
+        <div
+          style={{
+            color: "#00a86b",
+            fontSize: "0.8rem",
+            fontWeight: 800,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+          }}
+        >
+          KEAMANAN LINGKUNGAN
+        </div>
+        <h2
+          style={{
+            fontSize: "2rem",
+            fontWeight: 800,
+            margin: "0.25rem 0 0.5rem 0",
+          }}
+        >
+          CCTV Publik RW 19
+        </h2>
+        <p
+          style={{
+            color: "#94a3b8",
+            fontSize: "0.85rem",
+            marginBottom: "2.5rem",
+          }}
+        >
+          Klik kamera untuk membuka stream tayangan live →
+        </p>
+
+        <div className="cards-grid-3" style={{ textAlign: "left" }}>
+          {CCTV_DATA.map((cam) => (
+            <div key={cam.id} className="cctv-card">
+              <span className="cctv-live-badge">● LIVE</span>
+              <div
+                className="cctv-screen-box"
+                onClick={() => setSelectedCctv(cam)}
+              >
+                <Video size={36} color="#00a86b" />
+                <span
+                  style={{
+                    fontSize: "0.8rem",
+                    fontWeight: 700,
+                    color: "#00a86b",
+                    marginTop: "8px",
+                  }}
+                >
+                  Klik Tampilkan Stream
+                </span>
+              </div>
+              <h4
+                style={{
+                  margin: "0 0 4px 0",
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  color: "#f8fafc",
+                }}
+              >
+                {cam.name}
+              </h4>
+              <p style={{ margin: 0, fontSize: "0.75rem", color: "#64748b" }}>
+                {cam.loc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* MODAL POP-UP CCTV */}
+      {selectedCctv && (
+        <div className="modal-overlay" onClick={() => setSelectedCctv(null)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "#0f172a",
+              border: "1px solid #334155",
+              color: "#ffffff",
+            }}
+          >
+            <button
+              type="button"
+              className="modal-close-btn"
+              onClick={() => setSelectedCctv(null)}
+              style={{ background: "rgba(15, 23, 42, 0.8)", color: "#ffffff" }}
+            >
+              <X size={20} />
+            </button>
+            <div style={{ position: "relative" }}>
+              <img
+                src={selectedCctv.img}
+                alt={selectedCctv.name}
+                className="modal-img"
+              />
+              <span
+                className="cctv-live-badge"
+                style={{ position: "absolute", top: "12px", right: "12px" }}
+              >
+                ● LIVE STREAM 24/7
+              </span>
+            </div>
+            <div className="modal-body">
+              <h3 className="modal-title" style={{ color: "#ffffff" }}>
+                {selectedCctv.name}
+              </h3>
+              <p
+                style={{
+                  color: "#00a86b",
+                  fontWeight: 700,
+                  fontSize: "0.85rem",
+                  margin: "0 0 1rem 0",
+                }}
+              >
+                📍 {selectedCctv.loc}
+              </p>
+              <div
+                style={{
+                  background: "#1e293b",
+                  padding: "0.85rem",
+                  borderRadius: "8px",
+                  fontSize: "0.8rem",
+                  color: "#94a3b8",
+                  marginBottom: "1.25rem",
+                }}
+              >
+                Status Koneksi:{" "}
+                <strong style={{ color: "#22c55e" }}>
+                  Tergabung & Aktif (Realtime Feed)
+                </strong>
               </div>
 
-              <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <div style={{ display: "flex", gap: "0.75rem" }}>
                 <a
-                  href={`https://wa.me/${selectedUmkm.kontak}?text=Halo%20${encodeURIComponent(selectedUmkm.penjual)},%20saya%20tertarik%20membeli%20${encodeURIComponent(selectedUmkm.nama)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2"
+                  href="#pengaduan"
+                  className="btn-modal-close"
+                  style={{
+                    backgroundColor: "#ef4444",
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    textAlign: "center",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    flexGrow: 1,
+                  }}
+                  onClick={() => setSelectedCctv(null)}
                 >
-                  <Phone className="w-4 h-4" /> Beli / Pesan via WhatsApp
+                  <AlertTriangle size={16} /> Laporkan Kejadian / Pengaduan
                 </a>
                 <button
-                  onClick={() => setSelectedUmkm(null)}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-3 rounded-xl text-xs transition"
+                  type="button"
+                  className="btn-modal-close"
+                  style={{
+                    backgroundColor: "#334155",
+                    width: "auto",
+                    padding: "0 18px",
+                  }}
+                  onClick={() => setSelectedCctv(null)}
                 >
                   Tutup
                 </button>
@@ -653,421 +950,257 @@ function App() {
         </div>
       )}
 
-      {/* 6. BERITA & INFORMASI PUBLIK (PAPAN MADING DIGITAL) */}
-      <section id="berita" className="max-w-6xl mx-auto px-6 py-16">
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <span className="text-emerald-600 font-bold text-sm uppercase tracking-wider flex items-center gap-1.5">
-              <Newspaper className="w-4 h-4" /> Mading Digital RW 19
-            </span>
-            <h2 className="text-3xl font-bold text-slate-900 mt-1">
-              Berita & Informasi Publik
-            </h2>
-            <p className="text-slate-500 text-xs mt-1">
-              Kabar kegiatan warga, agenda Buruan Sae, dan pengumuman lingkungan
-            </p>
-          </div>
-        </div>
+      {/* 9. APARAT & PENGURUS */}
+      <section
+        id="aparat"
+        className="section-wrapper"
+        style={{ textAlign: "center" }}
+      >
+        <div className="section-tag">STRUKTUR PEMERINTAHAN</div>
+        <h2 className="section-header-title">Aparat & Pengurus RW 19</h2>
+        <p className="section-header-sub">
+          Pengurus pengelola wilayah RW 19 Antapani Tengah
+        </p>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {beritaList.map((berita) => (
-            <div
-              key={berita.id}
-              className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between"
-            >
-              <div>
-                <div className="relative h-44 overflow-hidden bg-slate-100">
-                  <img
-                    src={berita.gambar}
-                    alt={berita.judul}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=500";
-                    }}
-                  />
-                  <span className="absolute top-3 left-3 text-[10px] font-bold text-emerald-800 bg-emerald-100/90 backdrop-blur-sm px-2.5 py-1 rounded-md border border-emerald-200">
-                    {berita.kategori}
-                  </span>
-                </div>
-                <div className="p-5">
-                  <span className="text-[11px] font-semibold text-slate-400 block mb-1">
-                    {berita.tanggal}
-                  </span>
-                  <h3 className="font-bold text-slate-900 text-base leading-snug line-clamp-2">
-                    {berita.judul}
-                  </h3>
-                  <p className="text-slate-500 text-xs mt-2 leading-relaxed line-clamp-3">
-                    {berita.ringkasan}
-                  </p>
-                </div>
-              </div>
-
-              <div className="px-5 pb-5 pt-0">
-                <button
-                  onClick={() => setSelectedBerita(berita)}
-                  className="w-full bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold text-xs py-2.5 rounded-xl border border-emerald-200 transition flex items-center justify-center gap-1"
-                >
-                  Baca Selengkapnya →
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* --- MODAL DETAIL BERITA --- */}
-      {selectedBerita && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-900 rounded-3xl max-w-2xl w-full border border-emerald-100 overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col">
-            <div className="relative">
-              <img
-                src={selectedBerita.gambar}
-                alt={selectedBerita.judul}
-                className="w-full h-56 object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=500";
-                }}
-              />
-              <button
-                onClick={() => setSelectedBerita(null)}
-                className="absolute top-3 right-3 bg-slate-900/70 hover:bg-slate-900 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition backdrop-blur-sm"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <span className="absolute bottom-3 left-3 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                {selectedBerita.kategori}
-              </span>
-            </div>
-
-            <div className="p-6 overflow-y-auto space-y-4">
-              <span className="text-xs text-slate-400 font-semibold block">
-                Dipublikasikan: {selectedBerita.tanggal}
-              </span>
-
-              <h3 className="text-xl font-bold text-slate-900 leading-snug">
-                {selectedBerita.judul}
-              </h3>
-
-              <p className="text-xs text-slate-600 leading-relaxed pt-3 border-t border-slate-100">
-                {selectedBerita.isi}
-              </p>
-
-              <div className="pt-4 text-right">
-                <button
-                  onClick={() => setSelectedBerita(null)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition"
-                >
-                  Tutup Berita
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 7. CCTV LIVE STREAM */}
-      <section id="cctv" className="bg-slate-900 text-white py-16 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex justify-between items-end mb-2">
-            <div className="text-left">
-              <span className="text-emerald-400 font-bold text-sm uppercase tracking-wider">
-                Keamanan Lingkungan
-              </span>
-              <h2 className="text-3xl font-bold mt-1">CCTV Publik RW 19</h2>
-            </div>
-            <span className="text-xs text-slate-400 hidden sm:block">
-              Klik kamera untuk membuka stream tayangan live →
-            </span>
-          </div>
-
-          <div className="mt-6 flex gap-6 overflow-x-auto pb-6 scrollbar-thin snap-x text-left">
-            {cctvList.map((cam) => (
-              <div
-                key={cam.id}
-                onClick={() => setSelectedCctv(cam)}
-                className="min-w-[300px] sm:min-w-[360px] bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden relative snap-start flex-shrink-0 cursor-pointer hover:border-emerald-400 hover:shadow-xl transition group"
-              >
-                <div className="aspect-video bg-black/60 flex flex-col items-center justify-center text-slate-400 relative">
-                  <span
-                    className={`absolute top-3 right-3 text-[10px] font-mono font-bold px-2 py-0.5 rounded ${cam.status === "LIVE" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse" : "bg-slate-700 text-slate-400"}`}
-                  >
-                    ● {cam.status}
-                  </span>
-                  <Video className="w-10 h-10 text-emerald-400 mb-2 group-hover:scale-110 transition duration-300" />
-                  <span className="text-xs font-semibold text-emerald-300 group-hover:underline">
-                    Klik Tampilkan Stream
-                  </span>
-                </div>
-                <div className="p-4 bg-slate-800/90">
-                  <h4 className="font-bold text-sm text-white group-hover:text-emerald-300 transition">
-                    {cam.nama}
-                  </h4>
-                  <p className="text-xs text-slate-400 mt-0.5">{cam.lokasi}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- MODAL POP-UP CCTV RW 19 --- */}
-      {selectedCctv && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
-          <div className="bg-slate-900 text-white rounded-3xl max-w-4xl w-full border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
-            <div className="md:w-7/12 bg-slate-950 p-4 sm:p-6 flex flex-col justify-between relative min-h-[280px]">
-              <div className="flex justify-between items-center text-white z-10 mb-3">
-                <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold bg-emerald-600 px-3 py-1 rounded-full text-slate-950 shadow-md">
-                  <Radio className="w-3.5 h-3.5 animate-pulse text-slate-950" />{" "}
-                  STREAM RW 19
-                </span>
-                <span className="text-[11px] font-mono text-slate-400">
-                  POS SECURITY MONITOR
-                </span>
-              </div>
-
-              <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center my-auto">
-                {selectedCctv.status === "LIVE" ? (
-                  <>
-                    <img
-                      src={selectedCctv.preview}
-                      alt="CCTV Live Stream RW 19"
-                      className="w-full h-full object-cover opacity-90"
-                    />
-                    <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-sm text-emerald-400 text-[10px] font-mono px-2.5 py-1 rounded-md border border-emerald-500/30">
-                      🔴 LIVE 1080p | 60 FPS
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center p-4 text-slate-400">
-                    <Video className="w-10 h-10 mx-auto text-rose-500 mb-2" />
-                    <p className="text-xs font-bold text-rose-400">
-                      Kamera Tidak Aktif
-                    </p>
-                    <p className="text-[10px] text-slate-500 mt-1">
-                      Sedang dalam perbaikan jaringan lokal
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="text-[10px] text-slate-400 font-mono mt-3 flex justify-between">
-                <span>Latensi: ~12ms</span>
-                <span>Koneksi: Terproteksi RW 19</span>
-              </div>
-            </div>
-
-            <div className="md:w-5/12 p-6 flex flex-col justify-between bg-slate-900 border-t md:border-t-0 md:border-l border-slate-800/80">
-              <div>
-                <div className="flex justify-between items-start">
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    Pemantauan Buruan Sae
-                  </span>
-                  <button
-                    onClick={() => setSelectedCctv(null)}
-                    className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-800 transition"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <h3 className="font-bold text-white text-lg mt-3 leading-snug">
-                  {selectedCctv.nama}
-                </h3>
-
-                <div className="mt-5 space-y-3 text-xs">
-                  <div className="flex items-start gap-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-800">
-                    <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="block text-slate-200">
-                        Titik Lokasi:
-                      </strong>
-                      <span className="text-slate-400">
-                        {selectedCctv.lokasi}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-800">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="block text-slate-200">
-                        Penanggung Jawab:
-                      </strong>
-                      <span className="text-slate-400">
-                        {selectedCctv.pengawas}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5 bg-slate-800/50 p-3 rounded-xl border border-slate-800">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="block text-slate-200">
-                        Status Sistem:
-                      </strong>
-                      <span
-                        className={
-                          selectedCctv.status === "LIVE"
-                            ? "text-emerald-400 font-bold"
-                            : "text-rose-400 font-bold"
-                        }
-                      >
-                        {selectedCctv.status === "LIVE"
-                          ? "🟢 Online (Normal)"
-                          : "🔴 Offline"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-800/80 space-y-2">
-                <a
-                  href="#pengaduan"
-                  onClick={() => setSelectedCctv(null)}
-                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs shadow-md transition block text-center"
-                >
-                  Lapor Kendala CCTV
-                </a>
-                <button
-                  onClick={() => setSelectedCctv(null)}
-                  className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2 rounded-xl text-xs transition"
-                >
-                  Tutup Pop-up
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 8. APARAT / PENGURUS RW 19 */}
-      <section id="aparat" className="max-w-6xl mx-auto px-6 py-16">
-        <div className="text-center mb-10">
-          <span className="text-emerald-600 font-bold text-sm uppercase tracking-wider">
-            Struktur Pemerintahan
-          </span>
-          <h2 className="text-3xl font-bold text-slate-900 mt-1">
-            Aparat & Pengurus RW 19
-          </h2>
-          <p className="text-slate-500 text-sm mt-2">
-            Jajaran perangkat pengurus yang siap melayani kebutuhan warga
-            Antapani Tengah.
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {aparatList.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm hover:shadow-md transition"
-            >
-              <img
-                src={item.foto}
-                alt={item.nama}
-                className="w-24 h-24 rounded-full object-cover mx-auto mb-4 border-2 border-emerald-500"
-              />
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-block mb-2">
-                {item.peran}
-              </span>
-              <h3 className="font-bold text-slate-900 text-base">
+        <div className="cards-grid-3" style={{ textAlign: "left" }}>
+          {APARAT_DATA.map((item, idx) => (
+            <div key={idx} className="umkm-card" style={{ padding: "1.25rem" }}>
+              <h3 className="umkm-title" style={{ marginBottom: "2px" }}>
                 {item.nama}
               </h3>
-              <p className="text-slate-500 text-xs mt-1">{item.jabatan}</p>
+              <p
+                style={{
+                  fontSize: "0.85rem",
+                  color: "#00a86b",
+                  fontWeight: 700,
+                  margin: "0 0 0.75rem 0",
+                }}
+              >
+                {item.jabatan}
+              </p>
+              <div
+                style={{
+                  fontSize: "0.8rem",
+                  color: "#64748b",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <Phone size={14} /> Kontak: {item.kontak}
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 9. LAYANAN PENGADUAN */}
-      <section id="pengaduan" className="max-w-3xl mx-auto px-6 py-16">
-        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center">
-          <MessageSquare className="w-10 h-10 text-emerald-600 mx-auto mb-3" />
-          <h2 className="text-2xl font-bold text-slate-900">
-            Layanan Pengaduan & Aspirasi
-          </h2>
-          <p className="text-slate-500 text-sm mt-1">
-            Sampaikan masukan atau laporan fasilitas warga secara online.
-          </p>
+      {/* 10. FORM PENGADUAN */}
+      <section
+        id="pengaduan"
+        className="section-wrapper"
+        style={{
+          background: "#f8fafc",
+          borderRadius: "16px",
+          textAlign: "center",
+        }}
+      >
+        <div className="section-tag">LAYANAN PUBLIK</div>
+        <h2 className="section-header-title">Form Pengaduan Warga</h2>
+        <p className="section-header-sub">
+          Sampaikan aspirasi atau laporan kendala lingkungan RW 19
+        </p>
 
+        {submitted ? (
+          <div
+            style={{
+              backgroundColor: "#e1f2e5",
+              color: "#1b5e20",
+              padding: "1.25rem",
+              borderRadius: "12px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              fontWeight: 700,
+              maxWidth: "550px",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+          >
+            <CheckCircle2 size={20} /> Pengaduan Anda telah terkirim. Terima
+            kasih!
+          </div>
+        ) : (
           <form
-            className="mt-6 text-left space-y-4"
-            onSubmit={handleSubmitLapor}
+            onSubmit={handleSubmitPengaduan}
+            style={{
+              maxWidth: "520px",
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.2rem",
+              textAlign: "left",
+              backgroundColor: "#ffffff",
+              padding: "2rem",
+              borderRadius: "16px",
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.03)",
+            }}
           >
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Nama Lengkap
+              <label
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  display: "block",
+                  marginBottom: "6px",
+                  color: "#1e293b",
+                }}
+              >
+                Nama Lengkap:
               </label>
               <input
                 type="text"
+                value={nama}
+                onChange={(e) => setNama(e.target.value)}
+                placeholder="Masukkan nama Anda"
                 required
-                placeholder="Masukkan nama..."
-                value={formLapor.nama}
-                onChange={(e) =>
-                  setFormLapor({ ...formLapor, nama: e.target.value })
-                }
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                style={{
+                  width: "100%",
+                  padding: "11px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  boxSizing: "border-box",
+                  fontSize: "0.9rem",
+                }}
               />
             </div>
+
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Pesan / Laporan
+              <label
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  display: "block",
+                  marginBottom: "6px",
+                  color: "#1e293b",
+                }}
+              >
+                RT:
+              </label>
+              <select
+                value={rt}
+                onChange={(e) => setRt(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "11px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  boxSizing: "border-box",
+                  fontSize: "0.9rem",
+                }}
+              >
+                <option value="01">RT 01</option>
+                <option value="02">RT 02</option>
+                <option value="03">RT 03</option>
+                <option value="04">RT 04</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 700,
+                  display: "block",
+                  marginBottom: "6px",
+                  color: "#1e293b",
+                }}
+              >
+                Isi Pengaduan:
               </label>
               <textarea
-                rows={3}
+                rows={4}
+                value={pesan}
+                onChange={(e) => setPesan(e.target.value)}
+                placeholder="Tulis pesan atau laporan Anda..."
                 required
-                placeholder="Tuliskan aspirasi atau laporan..."
-                value={formLapor.pesan}
-                onChange={(e) =>
-                  setFormLapor({ ...formLapor, pesan: e.target.value })
-                }
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              ></textarea>
+                style={{
+                  width: "100%",
+                  padding: "11px 14px",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  boxSizing: "border-box",
+                  fontSize: "0.9rem",
+                  resize: "vertical",
+                }}
+              />
             </div>
+
             <button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition flex justify-center items-center gap-2 text-sm"
+              style={{
+                backgroundColor: "#00a86b",
+                color: "#fff",
+                border: "none",
+                padding: "12px 24px",
+                borderRadius: "8px",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                width: "100%",
+                marginTop: "0.5rem",
+                transition: "background-color 0.2s",
+              }}
             >
-              <Send className="w-4 h-4" /> Kirim Laporan
+              <Send size={16} /> Kirim Pengaduan
             </button>
           </form>
-        </div>
+        )}
       </section>
 
-      {/* --- MODAL POP-UP BERHASIL KIRIM PENGADUAN --- */}
-      {showLaporSuccess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-900 rounded-3xl max-w-sm w-full border border-emerald-100 p-6 text-center shadow-2xl space-y-4">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner">
-              <CheckCircle2 className="w-10 h-10 text-emerald-600" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">
-                Laporan Terkirim!
-              </h3>
-              <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                Terima kasih atas masukan kamu. Laporan telah masuk ke database
-                pengurus RW 19 dan akan segera ditindaklanjuti.
-              </p>
-            </div>
-            <button
-              onClick={() => setShowLaporSuccess(false)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition"
-            >
-              Tutup & Kembali
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* FOOTER */}
-      <footer className="bg-slate-900 text-slate-400 text-sm py-8 border-t border-slate-800 text-center">
-        <p>© 2026 Portal Digital RW 19 Antapani Tengah — Program Buruan Sae.</p>
+      <footer
+        style={{
+          backgroundColor: "#1b5e20",
+          color: "#ffffff",
+          padding: "2.5rem 1rem",
+          textAlign: "center",
+          marginTop: "4rem",
+        }}
+      >
+        <p
+          style={{
+            margin: "0 0 0.5rem 0",
+            fontWeight: 800,
+            fontSize: "1.1rem",
+          }}
+        >
+          RW 19 Antapani Tengah - Buruan Sae
+        </p>
+        <p style={{ margin: "0 0 1rem 0", fontSize: "0.85rem", opacity: 0.8 }}>
+          © 2026 Portal Resmi Komunitas RW 19. All Rights Reserved.
+        </p>
+        <button
+          type="button"
+          onClick={() => setCurrentPage("admin")}
+          style={{
+            background: "transparent",
+            color: "#81c784",
+            border: "1px solid rgba(129, 199, 132, 0.4)",
+            padding: "6px 14px",
+            borderRadius: "6px",
+            fontSize: "0.75rem",
+            cursor: "pointer",
+          }}
+        >
+          🔒 Halaman Admin RW 19
+        </button>
       </footer>
     </div>
   );
 }
-
-export default App;
