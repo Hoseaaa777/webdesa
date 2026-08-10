@@ -10,10 +10,11 @@ import {
   Lock,
   Globe,
   MapPin,
+  Compass,
+  ArrowRight,
 } from "lucide-react";
 import { AdminPage } from "./components/AdminPage";
 import type {
-  Pengaduan,
   UmkmItem,
   BeritaItem,
   CctvItem,
@@ -21,7 +22,7 @@ import type {
 } from "./components/AdminPage";
 import "./App.css";
 
-const INITIAL_PENGADUAN: Pengaduan[] = [
+const INITIAL_PENGADUAN: any[] = [
   {
     id: "1",
     rt: "01",
@@ -79,7 +80,7 @@ const INITIAL_BERITA: BeritaItem[] = [
     tanggal: "28 Juli 2026",
     desc: "Edukasi pengolahan sampah organik rumah tangga menjadi pupuk kompos berkualitas tinggi di Antapani.",
     image:
-      "https://www.poultryindonesia.com/wp-content/uploads/2020/10/compost002tw_0.jpg",
+      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=800",
   },
 ];
 
@@ -111,20 +112,14 @@ const INITIAL_APARAT: AparatItem[] = [
     jabatan: "Pengelola Program Buruan Sae",
     kontak: "0813-9876-5432",
   },
-  {
-    id: 3,
-    nama: "Bapak Rudi Hartono",
-    jabatan: "Koordinator Lapangan Tani",
-    kontak: "0815-1122-3344",
-  },
 ];
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<"public" | "admin">("public");
 
-  const [pengaduanList, setPengaduanList] = useState<Pengaduan[]>(() => {
+  const [pengaduanList, setPengaduanList] = useState<any[]>(() => {
     try {
-      const saved = localStorage.getItem("btn_pengaduan");
+      const saved = localStorage.getItem("ant_pengaduan");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0
         ? parsed
@@ -136,7 +131,7 @@ export default function App() {
 
   const [umkmList, setUmkmList] = useState<UmkmItem[]>(() => {
     try {
-      const saved = localStorage.getItem("btn_umkm");
+      const saved = localStorage.getItem("ant_umkm");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_UMKM;
     } catch {
@@ -146,7 +141,7 @@ export default function App() {
 
   const [beritaList, setBeritaList] = useState<BeritaItem[]>(() => {
     try {
-      const saved = localStorage.getItem("btn_berita_v2"); // Ganti jadi btn_berita_v2
+      const saved = localStorage.getItem("ant_berita_v6");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0
         ? parsed
@@ -158,7 +153,7 @@ export default function App() {
 
   const [cctvList, setCctvList] = useState<CctvItem[]>(() => {
     try {
-      const saved = localStorage.getItem("btn_cctv");
+      const saved = localStorage.getItem("ant_cctv");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_CCTV;
     } catch {
@@ -168,7 +163,7 @@ export default function App() {
 
   const [aparatList, setAparatList] = useState<AparatItem[]>(() => {
     try {
-      const saved = localStorage.getItem("btn_aparat");
+      const saved = localStorage.getItem("ant_aparat");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0
         ? parsed
@@ -180,7 +175,7 @@ export default function App() {
 
   const [wargaStats, setWargaStats] = useState<any>(() => {
     try {
-      const saved = localStorage.getItem("btn_wargastats");
+      const saved = localStorage.getItem("ant_wargastats");
       return saved
         ? JSON.parse(saved)
         : { totalWarga: 4500, totalKK: 1250, usiaProduktif: 3100, lansia: 500 };
@@ -195,12 +190,12 @@ export default function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem("btn_pengaduan", JSON.stringify(pengaduanList));
-    localStorage.setItem("btn_umkm", JSON.stringify(umkmList));
-    localStorage.setItem("btn_berita_v2", JSON.stringify(beritaList)); // Ganti jadi btn_berita_v2
-    localStorage.setItem("btn_cctv", JSON.stringify(cctvList));
-    localStorage.setItem("btn_aparat", JSON.stringify(aparatList));
-    localStorage.setItem("btn_wargastats", JSON.stringify(wargaStats));
+    localStorage.setItem("ant_pengaduan", JSON.stringify(pengaduanList));
+    localStorage.setItem("ant_umkm", JSON.stringify(umkmList));
+    localStorage.setItem("ant_berita_v6", JSON.stringify(beritaList));
+    localStorage.setItem("ant_cctv", JSON.stringify(cctvList));
+    localStorage.setItem("ant_aparat", JSON.stringify(aparatList));
+    localStorage.setItem("ant_wargastats", JSON.stringify(wargaStats));
   }, [pengaduanList, umkmList, beritaList, cctvList, aparatList, wargaStats]);
 
   const [selectedBerita, setSelectedBerita] = useState<BeritaItem | null>(null);
@@ -215,7 +210,7 @@ export default function App() {
     e.preventDefault();
     if (!nama || !pesan) return;
 
-    const newReport: Pengaduan = {
+    const newReport = {
       id: Date.now().toString(),
       rt,
       nama,
@@ -238,8 +233,9 @@ export default function App() {
   };
 
   if (currentPage === "admin") {
+    const AdminComp = AdminPage as any;
     return (
-      <AdminPage
+      <AdminComp
         pengaduanList={pengaduanList}
         onUpdatePengaduanStatus={(id: string, status: any) =>
           setPengaduanList((prev: any) =>
@@ -289,7 +285,7 @@ export default function App() {
   return (
     <div
       style={{
-        fontFamily: "system-ui, sans-serif",
+        fontFamily: "system-ui, -apple-system, sans-serif",
         backgroundColor: "#f0fdf4",
         color: "#14532d",
         minHeight: "100vh",
@@ -408,7 +404,7 @@ export default function App() {
             <Lock size={15} color="#15803d" /> Login Admin
           </button>
           <a
-            href="#pengaduan"
+            href="#contact"
             style={{
               backgroundColor: "#15803d",
               color: "#ffffff",
@@ -480,7 +476,7 @@ export default function App() {
           </p>
           <div style={{ display: "flex", gap: "1rem" }}>
             <a
-              href="#pengaduan"
+              href="#contact"
               style={{
                 backgroundColor: "#15803d",
                 color: "#fff",
@@ -522,11 +518,11 @@ export default function App() {
           }}
         >
           <img
-            src="https://gdb.voanews.com/09840000-0aff-0242-2bad-08da96739cdc_w1597_n_r1_s_s.jpg"
+            src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&q=80&w=800"
             alt="Kebun Buruan Sae RW 19"
             style={{
               width: "100%",
-              height: "320px",
+              height: "240px",
               objectFit: "cover",
               borderRadius: "20px",
               marginBottom: "1.25rem",
@@ -776,7 +772,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 4. LOCATIONS SECTION */}
+      {/* 4. LOCATIONS SECTION WITH STATIC MAP */}
       <section
         id="locations"
         style={{
@@ -816,7 +812,7 @@ export default function App() {
                 color: "#14532d",
               }}
             >
-              Titik Lokasi Buruan Sae RW 19
+              Peta Statik Titik Kebun Antapani RW 19
             </h2>
           </div>
           <div
@@ -846,199 +842,191 @@ export default function App() {
             boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
           }}
         >
+          {/* Static Map Container (Bukan iframe interaktif lagi) */}
           <div
             style={{
+              position: "relative",
+              width: "100%",
+              paddingTop: "42%",
               borderRadius: "16px",
               overflow: "hidden",
-              border: "1px solid #e2e8f0",
+              border: "1px solid #bbf7d0",
             }}
           >
-            <iframe
-              title="Peta Antapani"
-              src="https://maps.google.com/maps?q=Antapani%20Bandung&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            <img
+              src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=1200"
+              alt="Peta Statik Wilayah RW 19 Antapani"
               style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
                 width: "100%",
-                height: "400px",
-                border: "none",
-                display: "block",
+                height: "100%",
+                objectFit: "cover",
               }}
             />
+            <div
+              style={{
+                position: "absolute",
+                top: "16px",
+                left: "16px",
+                backgroundColor: "rgba(20,83,45,0.9)",
+                color: "#ffffff",
+                padding: "8px 16px",
+                borderRadius: "12px",
+                fontSize: "0.8rem",
+                fontWeight: 800,
+                backdropFilter: "blur(4px)",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <Compass size={16} /> PETA STATIK RESMI WILAYAH RW 19
+            </div>
           </div>
+
+          {/* Keterangan Batas Wilayah & Sektor Tani */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "1rem",
-              marginTop: "1.5rem",
-              padding: "0.5rem",
+              marginTop: "1.75rem",
+              padding: "1.25rem",
+              backgroundColor: "#f0fdf4",
+              borderRadius: "16px",
+              border: "1px solid #bbf7d0",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div
-                style={{
-                  width: "14px",
-                  height: "14px",
-                  backgroundColor: "#15803d",
-                  borderRadius: "50%",
-                }}
-              />
-              <span
-                style={{
-                  fontSize: "0.9rem",
-                  fontWeight: 700,
-                  color: "#14532d",
-                }}
-              >
-                Sektor 1: Kebun Utama RW 19
-              </span>
+            <div
+              style={{
+                fontSize: "0.9rem",
+                fontWeight: 800,
+                color: "#15803d",
+                marginBottom: "1rem",
+              }}
+            >
+              📍 LEGENDA SEKTOR KEBUN & BATAS WILAYAH RW 19
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: "1rem",
+              }}
+            >
               <div
                 style={{
-                  width: "14px",
-                  height: "14px",
-                  backgroundColor: "#16a34a",
-                  borderRadius: "50%",
-                }}
-              />
-              <span
-                style={{
-                  fontSize: "0.9rem",
-                  fontWeight: 700,
-                  color: "#14532d",
+                  backgroundColor: "#fff",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #bbf7d0",
                 }}
               >
-                Sektor 2: Green House Bibit
-              </span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#65a30d",
+                    fontWeight: 800,
+                  }}
+                >
+                  SEKTOR 1
+                </span>
+                <div
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 800,
+                    color: "#14532d",
+                  }}
+                >
+                  Kebun Utama RW 19
+                </div>
+              </div>
               <div
                 style={{
-                  width: "14px",
-                  height: "14px",
-                  backgroundColor: "#84cc16",
-                  borderRadius: "50%",
-                }}
-              />
-              <span
-                style={{
-                  fontSize: "0.9rem",
-                  fontWeight: 700,
-                  color: "#14532d",
+                  backgroundColor: "#fff",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #bbf7d0",
                 }}
               >
-                Sektor 3 & 4: Pekarangan Warga
-              </span>
+                <span
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#65a30d",
+                    fontWeight: 800,
+                  }}
+                >
+                  SEKTOR 2
+                </span>
+                <div
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 800,
+                    color: "#14532d",
+                  }}
+                >
+                  Green House Pembibitan
+                </div>
+              </div>
+              <div
+                style={{
+                  backgroundColor: "#fff",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #bbf7d0",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#65a30d",
+                    fontWeight: 800,
+                  }}
+                >
+                  SEKTOR 3
+                </span>
+                <div
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 800,
+                    color: "#14532d",
+                  }}
+                >
+                  Area Toga & Hidroponik
+                </div>
+              </div>
+              <div
+                style={{
+                  backgroundColor: "#fff",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #bbf7d0",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#65a30d",
+                    fontWeight: 800,
+                  }}
+                >
+                  BATAS UTARA
+                </span>
+                <div
+                  style={{
+                    fontSize: "0.95rem",
+                    fontWeight: 800,
+                    color: "#14532d",
+                  }}
+                >
+                  Jl. Antapani Raya
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. STATS SECTION */}
-      <section
-        style={{ padding: "2rem 2.5rem", maxWidth: "1280px", margin: "0 auto" }}
-      >
-        <div
-          style={{
-            backgroundColor: "#15803d",
-            color: "#ffffff",
-            borderRadius: "24px",
-            padding: "3rem 2rem",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "2rem",
-            textAlign: "center",
-            boxShadow: "0 20px 40px rgba(21,128,61,0.2)",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                fontSize: "0.85rem",
-                opacity: 0.9,
-                fontWeight: 700,
-                letterSpacing: "0.5px",
-              }}
-            >
-              TOTAL WARGA RW 19
-            </div>
-            <div
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: 900,
-                margin: "8px 0 0 0",
-              }}
-            >
-              {totalPop} Jiwa
-            </div>
-          </div>
-          <div>
-            <div
-              style={{
-                fontSize: "0.85rem",
-                opacity: 0.9,
-                fontWeight: 700,
-                letterSpacing: "0.5px",
-              }}
-            >
-              KEPALA KELUARGA
-            </div>
-            <div
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: 900,
-                margin: "8px 0 0 0",
-              }}
-            >
-              {wargaStats?.totalKK ?? 1250} KK
-            </div>
-          </div>
-          <div>
-            <div
-              style={{
-                fontSize: "0.85rem",
-                opacity: 0.9,
-                fontWeight: 700,
-                letterSpacing: "0.5px",
-              }}
-            >
-              PRODUK UMKM TANI
-            </div>
-            <div
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: 900,
-                margin: "8px 0 0 0",
-              }}
-            >
-              {umkmList.length} Item
-            </div>
-          </div>
-          <div>
-            <div
-              style={{
-                fontSize: "0.85rem",
-                opacity: 0.9,
-                fontWeight: 700,
-                letterSpacing: "0.5px",
-              }}
-            >
-              TITIK KEBUN AKTIF
-            </div>
-            <div
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: 900,
-                margin: "8px 0 0 0",
-              }}
-            >
-              4 Sektor
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. GALLERY SECTION */}
+      {/* 5. GALLERY SECTION */}
       <section
         id="gallery"
         style={{
@@ -1176,7 +1164,8 @@ export default function App() {
                     alignSelf: "flex-start",
                   }}
                 >
-                  <Newspaper size={16} /> Lihat Detail Kegiatan
+                  <Newspaper size={16} /> Lihat Detail Kegiatan{" "}
+                  <ArrowRight size={14} />
                 </button>
               </div>
             </div>
@@ -1269,101 +1258,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. UMKM SECTION */}
-      <section
-        style={{ padding: "4rem 2.5rem", maxWidth: "1280px", margin: "0 auto" }}
-      >
-        <div
-          style={{
-            fontSize: "0.8rem",
-            color: "#15803d",
-            fontWeight: 800,
-            letterSpacing: "1px",
-            textTransform: "uppercase",
-          }}
-        >
-          PRODUK LOKAL
-        </div>
-        <h2
-          style={{
-            fontSize: "2.2rem",
-            fontWeight: 900,
-            margin: "4px 0 1.5rem 0",
-            color: "#14532d",
-          }}
-        >
-          Etalase Hasil Tani & UMKM RW 19
-        </h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "2rem",
-          }}
-        >
-          {umkmList.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                backgroundColor: "#ffffff",
-                border: "1px solid #dcfce7",
-                borderRadius: "20px",
-                overflow: "hidden",
-                boxShadow: "0 8px 25px rgba(0,0,0,0.03)",
-              }}
-            >
-              <img
-                src={item.image}
-                alt={item.nama}
-                style={{ width: "100%", height: "200px", objectFit: "cover" }}
-              />
-              <div style={{ padding: "1.75rem" }}>
-                <span
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "#16a34a",
-                    fontWeight: 800,
-                  }}
-                >
-                  {item.kategori}
-                </span>
-                <h3
-                  style={{
-                    fontSize: "1.2rem",
-                    fontWeight: 800,
-                    margin: "6px 0 6px 0",
-                    color: "#14532d",
-                  }}
-                >
-                  {item.nama}
-                </h3>
-                <div
-                  style={{
-                    fontSize: "1rem",
-                    fontWeight: 800,
-                    color: "#15803d",
-                    marginBottom: "10px",
-                  }}
-                >
-                  {item.harga}
-                </div>
-                <p
-                  style={{
-                    fontSize: "0.95rem",
-                    color: "#3f6212",
-                    margin: 0,
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {item.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 8. CCTV SECTION */}
+      {/* 6. CCTV MONITORING SECTION */}
       <section
         style={{
           backgroundColor: "#14532d",
@@ -1552,7 +1447,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 9. CONTACT / FORM PENGADUAN SECTION */}
+      {/* 7. CONTACT / FORM PENGADUAN SECTION */}
       <section
         id="contact"
         style={{
@@ -1602,7 +1497,6 @@ export default function App() {
               lineHeight: 1.6,
             }}
           >
-            Tidak butuh pengalaman berkebun, cukup kemauan untuk merawat bumi.
             Kirimkan aspirasi, pertanyaan, atau pendaftaran bergabung melalui
             form di bawah ini:
           </p>
@@ -1626,7 +1520,6 @@ export default function App() {
             </div>
           ) : (
             <form
-              id="pengaduan"
               onSubmit={handleSubmitPengaduan}
               style={{
                 display: "flex",
@@ -1756,7 +1649,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 10. FOOTER */}
+      {/* 8. FOOTER */}
       <footer
         style={{
           backgroundColor: "#14532d",
