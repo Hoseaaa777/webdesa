@@ -17,6 +17,10 @@ import {
   Home,
   Landmark,
   UserCheck,
+  GraduationCap,
+  Layers,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { AdminPage } from "./components/AdminPage";
 import type {
@@ -26,6 +30,9 @@ import type {
   AparatItem,
 } from "./components/AdminPage";
 import "./App.css";
+
+// Import Gambar Peta Lokal
+import petaImg from "./assets/peta.jpeg";
 
 const INITIAL_PENGADUAN: any[] = [
   {
@@ -92,15 +99,33 @@ const INITIAL_BERITA: BeritaItem[] = [
 const INITIAL_CCTV: CctvItem[] = [
   {
     id: 1,
-    name: "Kamera 01 - Area Kebun Utama RW 19",
-    loc: "Jl. Antapani Raya, Bandung",
+    name: "Kamera 01 - Area Kebun Utama RT 01",
+    loc: "Sektor Barat RW 19",
     img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: 2,
-    name: "Kamera 02 - Green House Pembibitan",
-    loc: "Sektor Timur Antapani",
+    name: "Kamera 02 - Green House Pembibitan RT 02",
+    loc: "Sektor Tengah Antapani",
     img: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&q=80&w=800",
+  },
+  {
+    id: 3,
+    name: "Kamera 03 - Area Hidroponik & Toga RT 03",
+    loc: "Sektor Timur RW 19",
+    img: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&q=80&w=800",
+  },
+  {
+    id: 4,
+    name: "Kamera 04 - Pos Ronda & Gate Utama RW 19",
+    loc: "Jl. Antapani Raya",
+    img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800",
+  },
+  {
+    id: 5,
+    name: "Kamera 05 - Bank Sampah & Pengomposan RT 04",
+    loc: "Sektor Selatan RW 19",
+    img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800",
   },
 ];
 
@@ -122,6 +147,12 @@ const INITIAL_APARAT: AparatItem[] = [
 export default function App() {
   const [currentPage, setCurrentPage] = useState<"public" | "admin">("public");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  /* Filter Layer Peta Interaktif */
+  const [showKebun, setShowKebun] = useState(true);
+  const [showMasjid, setShowMasjid] = useState(true);
+  const [showSekolah, setShowSekolah] = useState(true);
+  const [showAreaRt, setShowAreaRt] = useState(true);
 
   const [pengaduanList, setPengaduanList] = useState<any[]>(() => {
     try {
@@ -147,7 +178,7 @@ export default function App() {
 
   const [beritaList, setBeritaList] = useState<BeritaItem[]>(() => {
     try {
-      const saved = localStorage.getItem("ant_berita_v15");
+      const saved = localStorage.getItem("ant_berita_v18");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0
         ? parsed
@@ -159,9 +190,11 @@ export default function App() {
 
   const [cctvList, setCctvList] = useState<CctvItem[]>(() => {
     try {
-      const saved = localStorage.getItem("ant_cctv");
+      const saved = localStorage.getItem("ant_cctv_v5");
       const parsed = saved ? JSON.parse(saved) : null;
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_CCTV;
+      return Array.isArray(parsed) && parsed.length >= 5
+        ? parsed
+        : INITIAL_CCTV;
     } catch {
       return INITIAL_CCTV;
     }
@@ -187,7 +220,9 @@ export default function App() {
         : {
             totalWarga: 4500,
             totalKK: 1250,
+            totalRT: 4,
             jumlahMasjid: 3,
+            jumlahSekolah: 2,
             lakiLaki: 2200,
             perempuan: 2300,
           };
@@ -195,7 +230,9 @@ export default function App() {
       return {
         totalWarga: 4500,
         totalKK: 1250,
+        totalRT: 4,
         jumlahMasjid: 3,
+        jumlahSekolah: 2,
         lakiLaki: 2200,
         perempuan: 2300,
       };
@@ -205,8 +242,8 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("ant_pengaduan", JSON.stringify(pengaduanList));
     localStorage.setItem("ant_umkm", JSON.stringify(umkmList));
-    localStorage.setItem("ant_berita_v15", JSON.stringify(beritaList));
-    localStorage.setItem("ant_cctv", JSON.stringify(cctvList));
+    localStorage.setItem("ant_berita_v18", JSON.stringify(beritaList));
+    localStorage.setItem("ant_cctv_v5", JSON.stringify(cctvList));
     localStorage.setItem("ant_aparat", JSON.stringify(aparatList));
     localStorage.setItem("ant_wargastats", JSON.stringify(wargaStats));
   }, [pengaduanList, umkmList, beritaList, cctvList, aparatList, wargaStats]);
@@ -303,11 +340,12 @@ export default function App() {
       }}
     >
       {/* 1. NAVBAR */}
+      {/* 1. NAVBAR RESPONSIF */}
       <header
         style={{
           backgroundColor: "#ffffff",
           borderBottom: "1px solid #dcfce7",
-          padding: "1rem 1.25rem",
+          padding: "0.85rem 1.5rem",
           position: "sticky",
           top: 0,
           zIndex: 50,
@@ -316,11 +354,14 @@ export default function App() {
       >
         <div
           style={{
+            maxWidth: "1280px",
+            margin: "0 auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
           }}
         >
+          {/* Logo & Judul */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div
               style={{
@@ -360,6 +401,17 @@ export default function App() {
             </div>
           </div>
 
+          {/* Menu Desktop (Muncul di Laptop/PC) */}
+          <nav className="desktop-nav">
+            <a href="#beranda">Home</a>
+            <a href="#about">About</a>
+            <a href="#statistik">Statistik</a>
+            <a href="#locations">Locations</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#contact">Contact</a>
+          </nav>
+
+          {/* Tombol Aksi Kanan (Admin & Hamburger Mobile) */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <button
               type="button"
@@ -370,7 +422,7 @@ export default function App() {
                 border: "1px solid #bbf7d0",
                 fontSize: "0.8rem",
                 fontWeight: 700,
-                padding: "8px 12px",
+                padding: "8px 14px",
                 borderRadius: "8px",
                 cursor: "pointer",
                 display: "inline-flex",
@@ -381,8 +433,10 @@ export default function App() {
               <Lock size={14} color="#15803d" /> Admin
             </button>
 
+            {/* Tombol Garis 3 (Hanya Tampil di HP/Mobile) */}
             <button
               type="button"
+              className="mobile-menu-btn"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               style={{
                 backgroundColor: "#15803d",
@@ -391,7 +445,6 @@ export default function App() {
                 padding: "8px",
                 borderRadius: "8px",
                 cursor: "pointer",
-                display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -402,6 +455,7 @@ export default function App() {
           </div>
         </div>
 
+        {/* Dropdown Menu Saat Garis 3 Diklik di Mobile */}
         {isMenuOpen && (
           <nav
             style={{
@@ -815,13 +869,13 @@ export default function App() {
         </div>
       </section>
 
-      {/* 4. SECTION DATA STATISTIK (BERSIH TANPA EMOJI) */}
+      {/* 4. SECTION DATA STATISTIK (LAYOUT 3 ATAS & 3 BAWAH) */}
       <section
         id="statistik"
         style={{
           scrollMarginTop: "120px",
           padding: "3.5rem 1.25rem",
-          maxWidth: "1280px",
+          maxWidth: "1100px",
           margin: "0 auto",
         }}
       >
@@ -841,7 +895,7 @@ export default function App() {
               textTransform: "uppercase",
             }}
           >
-            DEMOGRAFI & FASILITAS
+            DEMOGRAFI & FASILITAS WILAYAH
           </span>
           <h2
             style={{
@@ -854,16 +908,17 @@ export default function App() {
             Data Statistik Wilayah RW 19
           </h2>
           <p style={{ color: "#4d7c0f", fontSize: "1rem", lineHeight: 1.6 }}>
-            Informasi ringkas kependudukan, demografi warga, dan fasilitas
-            ibadah di lingkungan RW 19 Antapani.
+            Informasi ringkas kependudukan, demografi warga, jumlah unit RT,
+            serta fasilitas umum di lingkungan RW 19 Antapani.
           </p>
         </div>
 
+        {/* Grid 3 Kolom Presisi (3 Atas + 3 Bawah) */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "1.5rem",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "1.25rem",
           }}
         >
           {/* Card 1: Jumlah Warga */}
@@ -880,21 +935,21 @@ export default function App() {
               style={{
                 backgroundColor: "#f0fdf4",
                 color: "#15803d",
-                width: "46px",
-                height: "46px",
+                width: "44px",
+                height: "44px",
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: "1rem",
+                marginBottom: "0.85rem",
                 border: "1px solid #bbf7d0",
               }}
             >
-              <Users size={24} />
+              <Users size={22} />
             </div>
             <div
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
                 color: "#65a30d",
                 fontWeight: 800,
                 textTransform: "uppercase",
@@ -907,7 +962,7 @@ export default function App() {
                 fontSize: "2rem",
                 fontWeight: 900,
                 color: "#14532d",
-                margin: "4px 0",
+                margin: "2px 0",
               }}
             >
               {wargaStats?.totalWarga ?? 4500}
@@ -933,21 +988,21 @@ export default function App() {
               style={{
                 backgroundColor: "#f0fdf4",
                 color: "#15803d",
-                width: "46px",
-                height: "46px",
+                width: "44px",
+                height: "44px",
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: "1rem",
+                marginBottom: "0.85rem",
                 border: "1px solid #bbf7d0",
               }}
             >
-              <Home size={24} />
+              <Home size={22} />
             </div>
             <div
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
                 color: "#65a30d",
                 fontWeight: 800,
                 textTransform: "uppercase",
@@ -960,7 +1015,7 @@ export default function App() {
                 fontSize: "2rem",
                 fontWeight: 900,
                 color: "#14532d",
-                margin: "4px 0",
+                margin: "2px 0",
               }}
             >
               {wargaStats?.totalKK ?? 1250}
@@ -972,7 +1027,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Card 3: Jumlah Masjid */}
+          {/* Card 3: Jumlah RT */}
           <div
             style={{
               backgroundColor: "#ffffff",
@@ -986,21 +1041,74 @@ export default function App() {
               style={{
                 backgroundColor: "#f0fdf4",
                 color: "#15803d",
-                width: "46px",
-                height: "46px",
+                width: "44px",
+                height: "44px",
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: "1rem",
+                marginBottom: "0.85rem",
                 border: "1px solid #bbf7d0",
               }}
             >
-              <Landmark size={24} />
+              <Layers size={22} />
             </div>
             <div
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
+                color: "#65a30d",
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              JUMLAH RT
+            </div>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: 900,
+                color: "#14532d",
+                margin: "2px 0",
+              }}
+            >
+              {wargaStats?.totalRT ?? 4} RT
+            </div>
+            <div
+              style={{ fontSize: "0.85rem", color: "#3f6212", fontWeight: 600 }}
+            >
+              Wilayah Sektor
+            </div>
+          </div>
+
+          {/* Card 4: Jumlah Masjid */}
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #bbf7d0",
+              borderRadius: "18px",
+              padding: "1.5rem",
+              boxShadow: "0 10px 25px rgba(21,128,61,0.04)",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                color: "#15803d",
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "0.85rem",
+                border: "1px solid #bbf7d0",
+              }}
+            >
+              <Landmark size={22} />
+            </div>
+            <div
+              style={{
+                fontSize: "0.75rem",
                 color: "#65a30d",
                 fontWeight: 800,
                 textTransform: "uppercase",
@@ -1013,7 +1121,7 @@ export default function App() {
                 fontSize: "2rem",
                 fontWeight: 900,
                 color: "#14532d",
-                margin: "4px 0",
+                margin: "2px 0",
               }}
             >
               {wargaStats?.jumlahMasjid ?? 3}
@@ -1025,7 +1133,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Card 4: Demografi Gender (BERSIH TANPA EMOJI) */}
+          {/* Card 5: Jumlah Sekolah */}
           <div
             style={{
               backgroundColor: "#ffffff",
@@ -1039,21 +1147,74 @@ export default function App() {
               style={{
                 backgroundColor: "#f0fdf4",
                 color: "#15803d",
-                width: "46px",
-                height: "46px",
+                width: "44px",
+                height: "44px",
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: "1rem",
+                marginBottom: "0.85rem",
                 border: "1px solid #bbf7d0",
               }}
             >
-              <UserCheck size={24} />
+              <GraduationCap size={22} />
             </div>
             <div
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
+                color: "#65a30d",
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              JUMLAH SEKOLAH
+            </div>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: 900,
+                color: "#14532d",
+                margin: "2px 0",
+              }}
+            >
+              {wargaStats?.jumlahSekolah ?? 2}
+            </div>
+            <div
+              style={{ fontSize: "0.85rem", color: "#3f6212", fontWeight: 600 }}
+            >
+              Sarana Pendidikan
+            </div>
+          </div>
+
+          {/* Card 6: Demografi Gender */}
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #bbf7d0",
+              borderRadius: "18px",
+              padding: "1.5rem",
+              boxShadow: "0 10px 25px rgba(21,128,61,0.04)",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                color: "#15803d",
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "0.85rem",
+                border: "1px solid #bbf7d0",
+              }}
+            >
+              <UserCheck size={22} />
+            </div>
+            <div
+              style={{
+                fontSize: "0.75rem",
                 color: "#65a30d",
                 fontWeight: 800,
                 textTransform: "uppercase",
@@ -1063,7 +1224,7 @@ export default function App() {
             </div>
             <div
               style={{
-                fontSize: "1.2rem",
+                fontSize: "1.15rem",
                 fontWeight: 900,
                 color: "#14532d",
                 margin: "8px 0",
@@ -1075,13 +1236,13 @@ export default function App() {
             <div
               style={{ fontSize: "0.85rem", color: "#3f6212", fontWeight: 600 }}
             >
-              Demografi Gender
+              Demografi Kependudukan
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. LOCATIONS SECTION */}
+      {/* 5. LOCATIONS SECTION - PETA DENGAN OVERLAY TERPRESISI SIKU L MAP (TETAP AMAN) */}
       <section
         id="locations"
         style={{
@@ -1111,7 +1272,7 @@ export default function App() {
                 textTransform: "uppercase",
               }}
             >
-              PEMETAAN WILAYAH
+              PEMETAAN INTERAKTIF
             </div>
             <h2
               style={{
@@ -1121,7 +1282,7 @@ export default function App() {
                 color: "#14532d",
               }}
             >
-              Peta Statik Titik Kebun Antapani RW 19
+              Peta Sektor RW 19 Antapani Kidul
             </h2>
           </div>
           <div
@@ -1138,10 +1299,124 @@ export default function App() {
               gap: "6px",
             }}
           >
-            <MapPin size={14} /> Area Antapani Kidul
+            <MapPin size={14} /> Antapani Kidul, Bandung
           </div>
         </div>
 
+        {/* Panel Tombol Filter Layer Peta */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            border: "1px solid #dcfce7",
+            borderRadius: "16px",
+            padding: "1rem",
+            marginBottom: "1.25rem",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+            alignItems: "center",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "0.8rem",
+              fontWeight: 800,
+              color: "#14532d",
+              marginRight: "0.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Layers size={16} color="#15803d" /> FILTER PENANDA:
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setShowKebun(!showKebun)}
+            style={{
+              backgroundColor: showKebun ? "#15803d" : "#f0fdf4",
+              color: showKebun ? "#ffffff" : "#15803d",
+              border: "1px solid #bbf7d0",
+              padding: "8px 14px",
+              borderRadius: "20px",
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Sprout size={15} /> Kebun Buruan Sae{" "}
+            {showKebun ? <Eye size={13} /> : <EyeOff size={13} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowMasjid(!showMasjid)}
+            style={{
+              backgroundColor: showMasjid ? "#0284c7" : "#f0f9ff",
+              color: showMasjid ? "#ffffff" : "#0284c7",
+              border: "1px solid #bae6fd",
+              padding: "8px 14px",
+              borderRadius: "20px",
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Landmark size={15} /> Masjid{" "}
+            {showMasjid ? <Eye size={13} /> : <EyeOff size={13} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowSekolah(!showSekolah)}
+            style={{
+              backgroundColor: showSekolah ? "#eab308" : "#fefce8",
+              color: showSekolah ? "#ffffff" : "#ca8a04",
+              border: "1px solid #fef08a",
+              padding: "8px 14px",
+              borderRadius: "20px",
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <GraduationCap size={15} /> Sekolah{" "}
+            {showSekolah ? <Eye size={13} /> : <EyeOff size={13} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowAreaRt(!showAreaRt)}
+            style={{
+              backgroundColor: showAreaRt ? "#a855f7" : "#faf5ff",
+              color: showAreaRt ? "#ffffff" : "#9333ea",
+              border: "1px solid #e9d5ff",
+              padding: "8px 14px",
+              borderRadius: "20px",
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Layers size={15} /> Area RT (Transparan){" "}
+            {showAreaRt ? <Eye size={13} /> : <EyeOff size={13} />}
+          </button>
+        </div>
+
+        {/* Container Peta dengan Rasio Presisi */}
         <div
           style={{
             backgroundColor: "#ffffff",
@@ -1155,24 +1430,28 @@ export default function App() {
             style={{
               position: "relative",
               width: "100%",
-              paddingTop: "56.25%",
+              aspectRatio: "1/1",
+              maxHeight: "800px",
               borderRadius: "14px",
               overflow: "hidden",
               border: "1px solid #bbf7d0",
+              backgroundColor: "#ffffff",
             }}
           >
+            {/* GAMBAR PETA LOKAL DARI peta.jpeg */}
             <img
-              src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=1200"
-              alt="Peta Statik Wilayah RW 19 Antapani"
+              src={petaImg}
+              alt="Peta Wilayah RW 19 Antapani"
               style={{
                 position: "absolute",
                 top: 0,
                 left: 0,
                 width: "100%",
                 height: "100%",
-                objectFit: "cover",
+                objectFit: "contain",
               }}
             />
+
             <div
               style={{
                 position: "absolute",
@@ -1188,12 +1467,562 @@ export default function App() {
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                zIndex: 20,
               }}
             >
-              <Compass size={14} /> PETA STATIK RESMI RW 19
+              <Compass size={14} /> PETA SITES & LAYER SEKTOR RW 19
             </div>
+
+            {/* LAYER OVERLAY AREA RT TRANSPARAN DI ATAS peta.jpeg */}
+            {showAreaRt && (
+              <>
+                {/* Area RT 01 (Lengan Atas Horisontal) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "3%",
+                    left: "22%",
+                    width: "28%",
+                    height: "24%",
+                    backgroundColor: "rgba(34, 197, 94, 0.22)",
+                    clipPath:
+                      "polygon(0 1%, 100% 17%, 100% 100%, 50% 100%, 1% 30%)",
+                    borderRadius: "0px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    padding: "4px 8px",
+                    boxSizing: "border-box",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#15803d",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    RT 01
+                  </span>
+                </div>
+
+                {/* Area RT 02 (Siku / Tikungan Atas Kanan) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "10%",
+                    left: "50%",
+                    width: "24%",
+                    height: "36%",
+                    backgroundColor: "rgba(59, 130, 246, 0.22)",
+                    clipPath: "polygon(0 1%, 100% 15%, 100% 57%, 0 47%)",
+                    borderRadius: "14px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    padding: "4px 8px",
+                    boxSizing: "border-box",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#0284c7",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    RT 02
+                  </span>
+                </div>
+
+                {/* Area RT 03 (Badan Tengah Tegak) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "30%",
+                    left: "59%",
+                    width: "19%",
+                    height: "57%",
+                    backgroundColor: "rgba(130, 97, 0, 0.22)",
+                    clipPath:
+                      "polygon(0 1%, 63% 0, 77% 13%, 67% 26%, 100% 44%, 75% 69%, 43% 70%, 9% 32%)",
+                    borderRadius: "14px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    padding: "4px 8px",
+                    boxSizing: "border-box",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#ca8a04",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    RT 03
+                  </span>
+                </div>
+
+                {/* Area RT 04 (Ujung Bawah Tegak) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "70%",
+                    left: "66%",
+                    width: "10%",
+                    height: "24%",
+                    backgroundColor: "rgba(168, 85, 247, 0.22)",
+                    borderRadius: "0px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    padding: "4px 8px",
+                    boxSizing: "border-box",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#9333ea",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    RT 04
+                  </span>
+                </div>
+              </>
+            )}
+
+            {/* 1. LAYER PIN KEBUN BURUAN SAE (HIJAU) */}
+            {showKebun && (
+              <>
+                {/* Kebun Utama RT 01 */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "14%",
+                    left: "28%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#15803d",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    Kebun Utama RT 01
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#15803d",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <Sprout size={14} style={{ transform: "rotate(45deg)" }} />
+                  </div>
+                </div>
+
+                {/* Green House RT 02 */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "24%",
+                    left: "62%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#15803d",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    Green House RT 02
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#15803d",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <Sprout size={14} style={{ transform: "rotate(45deg)" }} />
+                  </div>
+                </div>
+
+                {/* Hydroponic RT 03 */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "58%",
+                    left: "70%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#15803d",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    Hydroponic RT 03
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#15803d",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <Sprout size={14} style={{ transform: "rotate(45deg)" }} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* 2. LAYER PIN MASJID (BIRU) */}
+            {showMasjid && (
+              <>
+                {/* Masjid Al-Ikhlas */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "12%",
+                    left: "48%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#0284c7",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    Masjid Al-Ikhlas
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#0284c7",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <Landmark
+                      size={14}
+                      style={{ transform: "rotate(45deg)" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Masjid Nurul Huda */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "56%",
+                    left: "73%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#0284c7",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    Masjid Nurul Huda
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#0284c7",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <Landmark
+                      size={14}
+                      style={{ transform: "rotate(45deg)" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Masjid Ar-Rahman */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "78%",
+                    left: "70%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#0284c7",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    Masjid Ar-Rahman
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#0284c7",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <Landmark
+                      size={14}
+                      style={{ transform: "rotate(45deg)" }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* 3. LAYER PIN SEKOLAH (KUNING / EMAS) */}
+            {showSekolah && (
+              <>
+                {/* PAUD / TK Antapani */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "22%",
+                    left: "68%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#ca8a04",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    PAUD / TK Antapani
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#ca8a04",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <GraduationCap
+                      size={14}
+                      style={{ transform: "rotate(45deg)" }}
+                    />
+                  </div>
+                </div>
+
+                {/* SD Negeri Antapani */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "86%",
+                    left: "72%",
+                    transform: "translate(-50%, -100%)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    zIndex: 15,
+                    cursor: "pointer",
+                  }}
+                >
+                  <span
+                    style={{
+                      backgroundColor: "#ca8a04",
+                      color: "#fff",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      padding: "2px 6px",
+                      borderRadius: "6px",
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      marginBottom: "2px",
+                    }}
+                  >
+                    SD Negeri Antapani
+                  </span>
+                  <div
+                    style={{
+                      backgroundColor: "#ca8a04",
+                      color: "#fff",
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "50% 50% 50% 0",
+                      transform: "rotate(-45deg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px solid #ffffff",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <GraduationCap
+                      size={14}
+                      style={{ transform: "rotate(45deg)" }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
+          {/* Legenda Keterangan */}
           <div
             style={{
               marginTop: "1.25rem",
@@ -1211,7 +2040,7 @@ export default function App() {
                 marginBottom: "0.75rem",
               }}
             >
-              📍 LEGENDA SEKTOR KEBUN & BATAS WILAYAH RW 19
+              📍 LEGENDA KETERANGAN SEKTOR & LOKASI
             </div>
             <div
               style={{
@@ -1231,11 +2060,11 @@ export default function App() {
                 <span
                   style={{
                     fontSize: "0.7rem",
-                    color: "#65a30d",
+                    color: "#15803d",
                     fontWeight: 800,
                   }}
                 >
-                  SEKTOR 1
+                  🌱 BURUAN SAE
                 </span>
                 <div
                   style={{
@@ -1244,7 +2073,7 @@ export default function App() {
                     color: "#14532d",
                   }}
                 >
-                  Kebun Utama RW 19
+                  3 Titik Kebun
                 </div>
               </div>
               <div
@@ -1258,11 +2087,11 @@ export default function App() {
                 <span
                   style={{
                     fontSize: "0.7rem",
-                    color: "#65a30d",
+                    color: "#0284c7",
                     fontWeight: 800,
                   }}
                 >
-                  SEKTOR 2
+                  🕌 IBADAH
                 </span>
                 <div
                   style={{
@@ -1271,7 +2100,7 @@ export default function App() {
                     color: "#14532d",
                   }}
                 >
-                  Green House Pembibitan
+                  3 Masjid RW 19
                 </div>
               </div>
               <div
@@ -1285,11 +2114,11 @@ export default function App() {
                 <span
                   style={{
                     fontSize: "0.7rem",
-                    color: "#65a30d",
+                    color: "#ca8a04",
                     fontWeight: 800,
                   }}
                 >
-                  SEKTOR 3
+                  🎓 PENDIDIKAN
                 </span>
                 <div
                   style={{
@@ -1298,7 +2127,7 @@ export default function App() {
                     color: "#14532d",
                   }}
                 >
-                  Area Toga & Hidroponik
+                  2 Unit Sekolah
                 </div>
               </div>
               <div
@@ -1312,11 +2141,11 @@ export default function App() {
                 <span
                   style={{
                     fontSize: "0.7rem",
-                    color: "#65a30d",
+                    color: "#9333ea",
                     fontWeight: 800,
                   }}
                 >
-                  BATAS UTARA
+                  🔲 CAKUPAN RT
                 </span>
                 <div
                   style={{
@@ -1325,7 +2154,7 @@ export default function App() {
                     color: "#14532d",
                   }}
                 >
-                  Jl. Antapani Raya
+                  RT 01 s/d RT 04
                 </div>
               </div>
             </div>
@@ -1564,7 +2393,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. CCTV MONITORING SECTION */}
+      {/* 7. CCTV MONITORING SECTION (1 BARIS SCROLL KE SAMPING KANAN) */}
       <section
         style={{
           backgroundColor: "#14532d",
@@ -1576,46 +2405,75 @@ export default function App() {
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div
             style={{
-              fontSize: "0.75rem",
-              color: "#86efac",
-              fontWeight: 800,
-              letterSpacing: "1px",
-              textTransform: "uppercase",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
+              marginBottom: "1.5rem",
+              flexWrap: "wrap",
+              gap: "0.5rem",
             }}
           >
-            LIVE MONITORING KEBUN
+            <div>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "#86efac",
+                  fontWeight: 800,
+                  letterSpacing: "1px",
+                  textTransform: "uppercase",
+                }}
+              >
+                LIVE MONITORING WILAYAH
+              </div>
+              <h2
+                style={{
+                  fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
+                  fontWeight: 900,
+                  margin: "4px 0 0 0",
+                }}
+              >
+                5 Titik CCTV Area RW 19
+              </h2>
+            </div>
+            <span
+              style={{
+                fontSize: "0.8rem",
+                color: "#86efac",
+                fontWeight: 700,
+              }}
+            >
+              👉 Geser ke kanan untuk melihat semua kamera
+            </span>
           </div>
-          <h2
-            style={{
-              fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
-              fontWeight: 900,
-              margin: "4px 0 1.5rem 0",
-            }}
-          >
-            CCTV Area Buruan Sae RW 19
-          </h2>
 
+          {/* Container 1 Baris Scroll Horizontal */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              display: "flex",
               gap: "1.5rem",
+              overflowX: "auto",
+              paddingBottom: "1rem",
+              scrollSnapType: "x mandatory",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             {cctvList.map((cam) => (
               <div
                 key={cam.id}
                 style={{
+                  flex: "0 0 280px",
+                  scrollSnapAlign: "start",
                   backgroundColor: "#166534",
                   border: "1px solid #1f763e",
                   borderRadius: "18px",
                   padding: "1.25rem",
+                  boxSizing: "border-box",
                 }}
               >
                 <div
                   style={{
                     position: "relative",
-                    height: "180px",
+                    height: "170px",
                     backgroundColor: "#000000",
                     borderRadius: "12px",
                     overflow: "hidden",
@@ -1666,7 +2524,7 @@ export default function App() {
                 <h4
                   style={{
                     margin: "0 0 4px 0",
-                    fontSize: "1.05rem",
+                    fontSize: "1rem",
                     fontWeight: 800,
                   }}
                 >
@@ -2049,7 +2907,7 @@ export default function App() {
               }}
             >
               Kebijakan
-            </h4>{" "}
+            </h4>
             <div
               style={{ display: "flex", flexDirection: "column", gap: "8px" }}
             >

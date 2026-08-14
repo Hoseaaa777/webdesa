@@ -678,3 +678,36 @@ body {
   border-color: #00a86b !important;
   box-shadow: 0 4px 14px rgba(0, 168, 107, 0.35) !important;
 }
+
+/* Styling Navbar Responsif Desktop vs Mobile */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.desktop-nav a {
+  color: #14532d;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.desktop-nav a:hover {
+  color: #15803d;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+/* Tampilan Layar HP / Tablet (< 768px) */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none; /* Sembunyikan menu horizontal di HP */
+  }
+  .mobile-menu-btn {
+    display: flex; /* Tampilkan tombol hamburger (garis 3) di HP */
+  }
+}
