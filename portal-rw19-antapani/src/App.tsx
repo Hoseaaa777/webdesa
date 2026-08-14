@@ -12,6 +12,12 @@ import {
   MapPin,
   Compass,
   ArrowRight,
+  Menu,
+  X,
+  Home,
+  Landmark,
+  UserCheck,
+  BarChart3,
 } from "lucide-react";
 import { AdminPage } from "./components/AdminPage";
 import type {
@@ -116,6 +122,7 @@ const INITIAL_APARAT: AparatItem[] = [
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<"public" | "admin">("public");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [pengaduanList, setPengaduanList] = useState<any[]>(() => {
     try {
@@ -141,7 +148,7 @@ export default function App() {
 
   const [beritaList, setBeritaList] = useState<BeritaItem[]>(() => {
     try {
-      const saved = localStorage.getItem("ant_berita_v9");
+      const saved = localStorage.getItem("ant_berita_v12");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0
         ? parsed
@@ -178,13 +185,20 @@ export default function App() {
       const saved = localStorage.getItem("ant_wargastats");
       return saved
         ? JSON.parse(saved)
-        : { totalWarga: 4500, totalKK: 1250, usiaProduktif: 3100, lansia: 500 };
+        : {
+            totalWarga: 4500,
+            totalKK: 1250,
+            jumlahMasjid: 3,
+            lakiLaki: 2200,
+            perempuan: 2300,
+          };
     } catch {
       return {
         totalWarga: 4500,
         totalKK: 1250,
-        usiaProduktif: 3100,
-        lansia: 500,
+        jumlahMasjid: 3,
+        lakiLaki: 2200,
+        perempuan: 2300,
       };
     }
   });
@@ -192,7 +206,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("ant_pengaduan", JSON.stringify(pengaduanList));
     localStorage.setItem("ant_umkm", JSON.stringify(umkmList));
-    localStorage.setItem("ant_berita_v9", JSON.stringify(beritaList));
+    localStorage.setItem("ant_berita_v12", JSON.stringify(beritaList));
     localStorage.setItem("ant_cctv", JSON.stringify(cctvList));
     localStorage.setItem("ant_aparat", JSON.stringify(aparatList));
     localStorage.setItem("ant_wargastats", JSON.stringify(wargaStats));
@@ -280,8 +294,6 @@ export default function App() {
     );
   }
 
-  const totalPop = wargaStats?.totalWarga ?? 4500;
-
   return (
     <div
       style={{
@@ -291,149 +303,167 @@ export default function App() {
         minHeight: "100vh",
       }}
     >
-      {/* 1. NAVBAR (RESPONSIF MOBILE) */}
+      {/* 1. NAVBAR (SUDAH DITAMBAHKAN MENU STATISTIK) */}
       <header
         style={{
           backgroundColor: "#ffffff",
           borderBottom: "1px solid #dcfce7",
           padding: "1rem 1.25rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "1rem",
           position: "sticky",
           top: 0,
           zIndex: 50,
           boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div
-            style={{
-              backgroundColor: "#15803d",
-              color: "#fff",
-              padding: "8px",
-              borderRadius: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Sprout size={22} />
-          </div>
-          <div>
-            <h1
-              style={{
-                fontSize: "1.1rem",
-                fontWeight: 800,
-                margin: 0,
-                color: "#14532d",
-                letterSpacing: "-0.5px",
-              }}
-            >
-              BURUAN SAE
-            </h1>
-            <p
-              style={{
-                fontSize: "0.75rem",
-                color: "#16a34a",
-                margin: 0,
-                fontWeight: 700,
-              }}
-            >
-              RW 19 Antapani
-            </p>
-          </div>
-        </div>
-        <nav
+        <div
           style={{
             display: "flex",
-            gap: "1rem",
-            fontSize: "0.85rem",
-            fontWeight: 700,
-            color: "#3f6212",
-            overflowX: "auto",
-            paddingBottom: "4px",
-            maxWidth: "100%",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <a
-            href="#beranda"
-            style={{
-              color: "#15803d",
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Home
-          </a>
-          <a
-            href="#about"
-            style={{
-              textDecoration: "none",
-              color: "inherit",
-              whiteSpace: "nowrap",
-            }}
-          >
-            About
-          </a>
-          <a
-            href="#locations"
-            style={{
-              textDecoration: "none",
-              color: "inherit",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Locations
-          </a>
-          <a
-            href="#gallery"
-            style={{
-              textDecoration: "none",
-              color: "inherit",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Gallery
-          </a>
-          <a
-            href="#contact"
-            style={{
-              textDecoration: "none",
-              color: "inherit",
-              whiteSpace: "nowrap",
-            }}
-          >
-            Contact
-          </a>
-        </nav>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div
+              style={{
+                backgroundColor: "#15803d",
+                color: "#fff",
+                padding: "8px",
+                borderRadius: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Sprout size={22} />
+            </div>
+            <div>
+              <h1
+                style={{
+                  fontSize: "1.1rem",
+                  fontWeight: 800,
+                  margin: 0,
+                  color: "#14532d",
+                  letterSpacing: "-0.5px",
+                }}
+              >
+                BURUAN SAE
+              </h1>
+              <p
+                style={{
+                  fontSize: "0.75rem",
+                  color: "#16a34a",
+                  margin: 0,
+                  fontWeight: 700,
+                }}
+              >
+                RW 19 Antapani
+              </p>
+            </div>
+          </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button
-            type="button"
-            onClick={() => setCurrentPage("admin")}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <button
+              type="button"
+              onClick={() => setCurrentPage("admin")}
+              style={{
+                backgroundColor: "#f0fdf4",
+                color: "#15803d",
+                border: "1px solid #bbf7d0",
+                fontSize: "0.8rem",
+                fontWeight: 700,
+                padding: "8px 12px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <Lock size={14} color="#15803d" /> Admin
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{
+                backgroundColor: "#15803d",
+                color: "#ffffff",
+                border: "none",
+                padding: "8px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              aria-label="Toggle Navigation Menu"
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Dropdown Menu Termasuk Tautan "Statistik" */}
+        {isMenuOpen && (
+          <nav
             style={{
-              backgroundColor: "#f0fdf4",
-              color: "#15803d",
-              border: "1px solid #bbf7d0",
-              fontSize: "0.8rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              marginTop: "1rem",
+              paddingTop: "1rem",
+              borderTop: "1px solid #e2e8f0",
+              fontSize: "0.95rem",
               fontWeight: 700,
-              padding: "8px 14px",
-              borderRadius: "8px",
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
             }}
           >
-            <Lock size={14} color="#15803d" /> Admin
-          </button>
-        </div>
+            <a
+              href="#beranda"
+              onClick={() => setIsMenuOpen(false)}
+              style={{ color: "#15803d", textDecoration: "none" }}
+            >
+              Home
+            </a>
+            <a
+              href="#about"
+              onClick={() => setIsMenuOpen(false)}
+              style={{ color: "#3f6212", textDecoration: "none" }}
+            >
+              About
+            </a>
+            <a
+              href="#statistik"
+              onClick={() => setIsMenuOpen(false)}
+              style={{ color: "#3f6212", textDecoration: "none" }}
+            >
+              Statistik
+            </a>
+            <a
+              href="#locations"
+              onClick={() => setIsMenuOpen(false)}
+              style={{ color: "#3f6212", textDecoration: "none" }}
+            >
+              Locations
+            </a>
+            <a
+              href="#gallery"
+              onClick={() => setIsMenuOpen(false)}
+              style={{ color: "#3f6212", textDecoration: "none" }}
+            >
+              Gallery
+            </a>
+            <a
+              href="#contact"
+              onClick={() => setIsMenuOpen(false)}
+              style={{ color: "#3f6212", textDecoration: "none" }}
+            >
+              Contact
+            </a>
+          </nav>
+        )}
       </header>
 
-      {/* 2. HERO SECTION (STACKING MOBILE) */}
+      {/* 2. HERO SECTION (BERSIH DARI STATISTIK EMBEDDED) */}
       <section
         id="beranda"
         style={{
@@ -539,7 +569,7 @@ export default function App() {
             alt="Kebun Buruan Sae RW 19"
             style={{
               width: "100%",
-              height: "200px",
+              height: "220px",
               objectFit: "cover",
               borderRadius: "16px",
               marginBottom: "1rem",
@@ -562,16 +592,16 @@ export default function App() {
                   letterSpacing: "0.5px",
                 }}
               >
-                TOTAL WARGA TERLIBAT
+                PROGRAM UTAMA
               </div>
               <div
                 style={{
-                  fontSize: "1.5rem",
+                  fontSize: "1.2rem",
                   fontWeight: 900,
                   color: "#14532d",
                 }}
               >
-                {totalPop} Jiwa
+                Buruan Sae RW 19
               </div>
             </div>
             <span
@@ -787,7 +817,273 @@ export default function App() {
         </div>
       </section>
 
-      {/* 4. LOCATIONS SECTION WITH MOBILE PROPORTIONAL MAP */}
+      {/* 4. SECTION BARU: DATA STATISTIK WILAYAH */}
+      <section
+        id="statistik"
+        style={{
+          scrollMarginTop: "120px",
+          padding: "3.5rem 1.25rem",
+          maxWidth: "1280px",
+          margin: "0 auto",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            maxWidth: "850px",
+            margin: "0 auto 2.5rem auto",
+          }}
+        >
+          <span
+            style={{
+              fontSize: "0.75rem",
+              color: "#15803d",
+              fontWeight: 800,
+              letterSpacing: "1px",
+              textTransform: "uppercase",
+            }}
+          >
+            DEMOGRAFI & FASILITAS
+          </span>
+          <h2
+            style={{
+              fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
+              fontWeight: 900,
+              margin: "8px 0 1rem 0",
+              color: "#14532d",
+            }}
+          >
+            Data Statistik Wilayah RW 19
+          </h2>
+          <p style={{ color: "#4d7c0f", fontSize: "1rem", lineHeight: 1.6 }}>
+            Informasi ringkas kependudukan, demografi warga, dan fasilitas
+            ibadah di lingkungan RW 19 Antapani.
+          </p>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: "1.5rem",
+          }}
+        >
+          {/* Card 1: Jumlah Warga */}
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #bbf7d0",
+              borderRadius: "18px",
+              padding: "1.5rem",
+              boxShadow: "0 10px 25px rgba(21,128,61,0.04)",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                color: "#15803d",
+                width: "46px",
+                height: "46px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "1rem",
+                border: "1px solid #bbf7d0",
+              }}
+            >
+              <Users size={24} />
+            </div>
+            <div
+              style={{
+                fontSize: "0.8rem",
+                color: "#65a30d",
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              JUMLAH WARGA
+            </div>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: 900,
+                color: "#14532d",
+                margin: "4px 0",
+              }}
+            >
+              {wargaStats?.totalWarga ?? 4500}
+            </div>
+            <div
+              style={{ fontSize: "0.85rem", color: "#3f6212", fontWeight: 600 }}
+            >
+              Jiwa Terdaftar
+            </div>
+          </div>
+
+          {/* Card 2: Kepala Keluarga */}
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #bbf7d0",
+              borderRadius: "18px",
+              padding: "1.5rem",
+              boxShadow: "0 10px 25px rgba(21,128,61,0.04)",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                color: "#15803d",
+                width: "46px",
+                height: "46px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "1rem",
+                border: "1px solid #bbf7d0",
+              }}
+            >
+              <Home size={24} />
+            </div>
+            <div
+              style={{
+                fontSize: "0.8rem",
+                color: "#65a30d",
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              KEPALA KELUARGA
+            </div>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: 900,
+                color: "#14532d",
+                margin: "4px 0",
+              }}
+            >
+              {wargaStats?.totalKK ?? 1250}
+            </div>
+            <div
+              style={{ fontSize: "0.85rem", color: "#3f6212", fontWeight: 600 }}
+            >
+              KK Terdata
+            </div>
+          </div>
+
+          {/* Card 3: Jumlah Masjid */}
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #bbf7d0",
+              borderRadius: "18px",
+              padding: "1.5rem",
+              boxShadow: "0 10px 25px rgba(21,128,61,0.04)",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                color: "#15803d",
+                width: "46px",
+                height: "46px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "1rem",
+                border: "1px solid #bbf7d0",
+              }}
+            >
+              <Landmark size={24} />
+            </div>
+            <div
+              style={{
+                fontSize: "0.8rem",
+                color: "#65a30d",
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              JUMLAH MASJID
+            </div>
+            <div
+              style={{
+                fontSize: "2rem",
+                fontWeight: 900,
+                color: "#14532d",
+                margin: "4px 0",
+              }}
+            >
+              {wargaStats?.jumlahMasjid ?? 3}
+            </div>
+            <div
+              style={{ fontSize: "0.85rem", color: "#3f6212", fontWeight: 600 }}
+            >
+              Fasilitas Ibadah
+            </div>
+          </div>
+
+          {/* Card 4: Demografi Gender */}
+          <div
+            style={{
+              backgroundColor: "#ffffff",
+              border: "1px solid #bbf7d0",
+              borderRadius: "18px",
+              padding: "1.5rem",
+              boxShadow: "0 10px 25px rgba(21,128,61,0.04)",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                color: "#15803d",
+                width: "46px",
+                height: "46px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "1rem",
+                border: "1px solid #bbf7d0",
+              }}
+            >
+              <UserCheck size={24} />
+            </div>
+            <div
+              style={{
+                fontSize: "0.8rem",
+                color: "#65a30d",
+                fontWeight: 800,
+                textTransform: "uppercase",
+              }}
+            >
+              PRIA & WANITA
+            </div>
+            <div
+              style={{
+                fontSize: "1.3rem",
+                fontWeight: 900,
+                color: "#14532d",
+                margin: "8px 0",
+              }}
+            >
+              👦 {wargaStats?.lakiLaki ?? 2200} | 👧{" "}
+              {wargaStats?.perempuan ?? 2300}
+            </div>
+            <div
+              style={{ fontSize: "0.85rem", color: "#3f6212", fontWeight: 600 }}
+            >
+              Demografi Gender
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. LOCATIONS SECTION */}
       <section
         id="locations"
         style={{
@@ -1039,7 +1335,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 5. GALLERY SECTION */}
+      {/* 6. GALLERY SECTION */}
       <section
         id="gallery"
         style={{
@@ -1270,7 +1566,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 6. CCTV MONITORING SECTION */}
+      {/* 7. CCTV MONITORING SECTION */}
       <section
         style={{
           backgroundColor: "#14532d",
@@ -1460,7 +1756,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. CONTACT / FORM PENGADUAN SECTION */}
+      {/* 8. CONTACT / FORM PENGADUAN SECTION */}
       <section
         id="contact"
         style={{
@@ -1662,7 +1958,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 8. FOOTER */}
+      {/* 9. FOOTER */}
       <footer
         style={{
           backgroundColor: "#14532d",
