@@ -17,7 +17,6 @@ import {
   Home,
   Landmark,
   UserCheck,
-  BarChart3,
 } from "lucide-react";
 import { AdminPage } from "./components/AdminPage";
 import type {
@@ -148,7 +147,7 @@ export default function App() {
 
   const [beritaList, setBeritaList] = useState<BeritaItem[]>(() => {
     try {
-      const saved = localStorage.getItem("ant_berita_v12");
+      const saved = localStorage.getItem("ant_berita_v15");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0
         ? parsed
@@ -206,7 +205,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("ant_pengaduan", JSON.stringify(pengaduanList));
     localStorage.setItem("ant_umkm", JSON.stringify(umkmList));
-    localStorage.setItem("ant_berita_v12", JSON.stringify(beritaList));
+    localStorage.setItem("ant_berita_v15", JSON.stringify(beritaList));
     localStorage.setItem("ant_cctv", JSON.stringify(cctvList));
     localStorage.setItem("ant_aparat", JSON.stringify(aparatList));
     localStorage.setItem("ant_wargastats", JSON.stringify(wargaStats));
@@ -303,7 +302,7 @@ export default function App() {
         minHeight: "100vh",
       }}
     >
-      {/* 1. NAVBAR (SUDAH DITAMBAHKAN MENU STATISTIK) */}
+      {/* 1. NAVBAR */}
       <header
         style={{
           backgroundColor: "#ffffff",
@@ -403,7 +402,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dropdown Menu Termasuk Tautan "Statistik" */}
         {isMenuOpen && (
           <nav
             style={{
@@ -463,7 +461,7 @@ export default function App() {
         )}
       </header>
 
-      {/* 2. HERO SECTION (BERSIH DARI STATISTIK EMBEDDED) */}
+      {/* 2. HERO SECTION */}
       <section
         id="beranda"
         style={{
@@ -817,7 +815,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 4. SECTION BARU: DATA STATISTIK WILAYAH */}
+      {/* 4. SECTION DATA STATISTIK (BERSIH TANPA EMOJI) */}
       <section
         id="statistik"
         style={{
@@ -1027,7 +1025,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Card 4: Demografi Gender */}
+          {/* Card 4: Demografi Gender (BERSIH TANPA EMOJI) */}
           <div
             style={{
               backgroundColor: "#ffffff",
@@ -1065,13 +1063,13 @@ export default function App() {
             </div>
             <div
               style={{
-                fontSize: "1.3rem",
+                fontSize: "1.2rem",
                 fontWeight: 900,
                 color: "#14532d",
                 margin: "8px 0",
               }}
             >
-              👦 {wargaStats?.lakiLaki ?? 2200} | 👧{" "}
+              Pria: {wargaStats?.lakiLaki ?? 2200} | Wanita:{" "}
               {wargaStats?.perempuan ?? 2300}
             </div>
             <div
@@ -2051,7 +2049,7 @@ export default function App() {
               }}
             >
               Kebijakan
-            </h4>
+            </h4>{" "}
             <div
               style={{ display: "flex", flexDirection: "column", gap: "8px" }}
             >
