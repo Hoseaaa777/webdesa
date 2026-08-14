@@ -141,7 +141,7 @@ export default function App() {
 
   const [beritaList, setBeritaList] = useState<BeritaItem[]>(() => {
     try {
-      const saved = localStorage.getItem("ant_berita_v6");
+      const saved = localStorage.getItem("ant_berita_v9");
       const parsed = saved ? JSON.parse(saved) : null;
       return Array.isArray(parsed) && parsed.length > 0
         ? parsed
@@ -192,7 +192,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("ant_pengaduan", JSON.stringify(pengaduanList));
     localStorage.setItem("ant_umkm", JSON.stringify(umkmList));
-    localStorage.setItem("ant_berita_v6", JSON.stringify(beritaList));
+    localStorage.setItem("ant_berita_v9", JSON.stringify(beritaList));
     localStorage.setItem("ant_cctv", JSON.stringify(cctvList));
     localStorage.setItem("ant_aparat", JSON.stringify(aparatList));
     localStorage.setItem("ant_wargastats", JSON.stringify(wargaStats));
@@ -291,39 +291,41 @@ export default function App() {
         minHeight: "100vh",
       }}
     >
-      {/* 1. NAVBAR */}
+      {/* 1. NAVBAR (RESPONSIF MOBILE) */}
       <header
         style={{
           backgroundColor: "#ffffff",
           borderBottom: "1px solid #dcfce7",
-          padding: "1.2rem 2.5rem",
+          padding: "1rem 1.25rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem",
           position: "sticky",
           top: 0,
           zIndex: 50,
           boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div
             style={{
               backgroundColor: "#15803d",
               color: "#fff",
-              padding: "10px",
-              borderRadius: "12px",
+              padding: "8px",
+              borderRadius: "10px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Sprout size={26} />
+            <Sprout size={22} />
           </div>
           <div>
             <h1
               style={{
-                fontSize: "1.2rem",
+                fontSize: "1.1rem",
                 fontWeight: 800,
                 margin: 0,
                 color: "#14532d",
@@ -334,7 +336,7 @@ export default function App() {
             </h1>
             <p
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
                 color: "#16a34a",
                 margin: 0,
                 fontWeight: 700,
@@ -344,46 +346,71 @@ export default function App() {
             </p>
           </div>
         </div>
-
         <nav
           style={{
             display: "flex",
-            gap: "2rem",
-            fontSize: "0.95rem",
-            fontWeight: 600,
+            gap: "1rem",
+            fontSize: "0.85rem",
+            fontWeight: 700,
             color: "#3f6212",
+            overflowX: "auto",
+            paddingBottom: "4px",
+            maxWidth: "100%",
           }}
         >
           <a
             href="#beranda"
-            style={{ color: "#15803d", textDecoration: "none" }}
+            style={{
+              color: "#15803d",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
           >
             Home
           </a>
-          <a href="#about" style={{ textDecoration: "none", color: "inherit" }}>
+          <a
+            href="#about"
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              whiteSpace: "nowrap",
+            }}
+          >
             About
           </a>
           <a
             href="#locations"
-            style={{ textDecoration: "none", color: "inherit" }}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              whiteSpace: "nowrap",
+            }}
           >
             Locations
           </a>
           <a
             href="#gallery"
-            style={{ textDecoration: "none", color: "inherit" }}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              whiteSpace: "nowrap",
+            }}
           >
             Gallery
           </a>
           <a
             href="#contact"
-            style={{ textDecoration: "none", color: "inherit" }}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              whiteSpace: "nowrap",
+            }}
           >
             Contact
           </a>
         </nav>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <button
             type="button"
             onClick={() => setCurrentPage("admin")}
@@ -391,46 +418,32 @@ export default function App() {
               backgroundColor: "#f0fdf4",
               color: "#15803d",
               border: "1px solid #bbf7d0",
-              fontSize: "0.85rem",
+              fontSize: "0.8rem",
               fontWeight: 700,
-              padding: "9px 16px",
-              borderRadius: "10px",
+              padding: "8px 14px",
+              borderRadius: "8px",
               cursor: "pointer",
               display: "inline-flex",
               alignItems: "center",
               gap: "6px",
             }}
           >
-            <Lock size={15} color="#15803d" /> Login Admin
+            <Lock size={14} color="#15803d" /> Admin
           </button>
-          <a
-            href="#contact"
-            style={{
-              backgroundColor: "#15803d",
-              color: "#ffffff",
-              textDecoration: "none",
-              padding: "10px 20px",
-              borderRadius: "25px",
-              fontWeight: 700,
-              fontSize: "0.9rem",
-            }}
-          >
-            Join Movement
-          </a>
         </div>
       </header>
 
-      {/* 2. HERO SECTION */}
+      {/* 2. HERO SECTION (STACKING MOBILE) */}
       <section
         id="beranda"
         style={{
-          scrollMarginTop: "150px",
-          padding: "4rem 2.5rem",
+          scrollMarginTop: "120px",
+          padding: "2.5rem 1.25rem",
           maxWidth: "1280px",
           margin: "0 auto",
           display: "grid",
-          gridTemplateColumns: "1.3fr 1fr",
-          gap: "3rem",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: "2rem",
           alignItems: "center",
         }}
       >
@@ -439,25 +452,25 @@ export default function App() {
             style={{
               backgroundColor: "#dcfce7",
               color: "#15803d",
-              padding: "8px 16px",
+              padding: "6px 14px",
               borderRadius: "20px",
-              fontSize: "0.8rem",
+              fontSize: "0.75rem",
               fontWeight: 700,
               border: "1px solid #bbf7d0",
               display: "inline-block",
-              marginBottom: "1.2rem",
+              marginBottom: "1rem",
             }}
           >
             🌱 Nurturing the earth, feeding the community.
           </span>
           <h2
             style={{
-              fontSize: "3.2rem",
+              fontSize: "clamp(2rem, 6vw, 3.2rem)",
               fontWeight: 900,
-              margin: "0 0 1.5rem 0",
+              margin: "0 0 1rem 0",
               lineHeight: 1.15,
               color: "#14532d",
-              letterSpacing: "-1px",
+              letterSpacing: "-0.5px",
             }}
           >
             Menumbuhkan Kehidupan di Tengah Kota
@@ -465,27 +478,29 @@ export default function App() {
           <p
             style={{
               color: "#3f6212",
-              fontSize: "1.1rem",
-              lineHeight: 1.7,
-              margin: "0 0 2rem 0",
+              fontSize: "1rem",
+              lineHeight: 1.6,
+              margin: "0 0 1.5rem 0",
             }}
           >
             Bergabunglah dengan gerakan Buruan Sae RW 19 Antapani. Bersama kita
             mengubah lahan tidur menjadi kebun hijau produktif yang menutrisi
             komunitas dan menghidupkan kembali harmoni alam di lingkungan urban.
           </p>
-          <div style={{ display: "flex", gap: "1rem" }}>
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
             <a
               href="#contact"
               style={{
                 backgroundColor: "#15803d",
                 color: "#fff",
-                padding: "14px 28px",
+                padding: "12px 24px",
                 borderRadius: "30px",
                 fontWeight: 700,
                 textDecoration: "none",
-                fontSize: "0.95rem",
-                boxShadow: "0 4px 14px rgba(21,128,61,0.3)",
+                fontSize: "0.9rem",
+                boxShadow: "0 4px 14px rgba(21,128,61,0.25)",
+                textAlign: "center",
+                flexGrow: 1,
               }}
             >
               Mulai Menanam
@@ -496,11 +511,13 @@ export default function App() {
                 backgroundColor: "#ffffff",
                 color: "#15803d",
                 border: "2px solid #bbf7d0",
-                padding: "14px 28px",
+                padding: "12px 24px",
                 borderRadius: "30px",
                 fontWeight: 700,
                 textDecoration: "none",
-                fontSize: "0.95rem",
+                fontSize: "0.9rem",
+                textAlign: "center",
+                flexGrow: 1,
               }}
             >
               Pelajari Lebih Lanjut
@@ -511,10 +528,10 @@ export default function App() {
         <div
           style={{
             backgroundColor: "#ffffff",
-            borderRadius: "28px",
+            borderRadius: "24px",
             border: "1px solid #dcfce7",
-            padding: "1.75rem",
-            boxShadow: "0 20px 40px -15px rgba(21,128,61,0.12)",
+            padding: "1.25rem",
+            boxShadow: "0 15px 35px -15px rgba(21,128,61,0.12)",
           }}
         >
           <img
@@ -522,10 +539,10 @@ export default function App() {
             alt="Kebun Buruan Sae RW 19"
             style={{
               width: "100%",
-              height: "240px",
+              height: "200px",
               objectFit: "cover",
-              borderRadius: "20px",
-              marginBottom: "1.25rem",
+              borderRadius: "16px",
+              marginBottom: "1rem",
             }}
           />
           <div
@@ -533,13 +550,13 @@ export default function App() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              padding: "0 0.5rem",
+              padding: "0 0.25rem",
             }}
           >
             <div>
               <div
                 style={{
-                  fontSize: "0.75rem",
+                  fontSize: "0.7rem",
                   color: "#65a30d",
                   fontWeight: 800,
                   letterSpacing: "0.5px",
@@ -549,7 +566,7 @@ export default function App() {
               </div>
               <div
                 style={{
-                  fontSize: "1.8rem",
+                  fontSize: "1.5rem",
                   fontWeight: 900,
                   color: "#14532d",
                 }}
@@ -561,10 +578,10 @@ export default function App() {
               style={{
                 backgroundColor: "#f0fdf4",
                 color: "#16a34a",
-                padding: "8px 16px",
-                borderRadius: "16px",
+                padding: "6px 12px",
+                borderRadius: "12px",
                 fontWeight: 800,
-                fontSize: "0.85rem",
+                fontSize: "0.75rem",
                 border: "1px solid #bbf7d0",
               }}
             >
@@ -578,8 +595,8 @@ export default function App() {
       <section
         id="about"
         style={{
-          scrollMarginTop: "150px",
-          padding: "5rem 2.5rem",
+          scrollMarginTop: "120px",
+          padding: "3.5rem 1.25rem",
           backgroundColor: "#ffffff",
           borderTop: "1px solid #dcfce7",
           borderBottom: "1px solid #dcfce7",
@@ -590,15 +607,15 @@ export default function App() {
             style={{
               textAlign: "center",
               maxWidth: "850px",
-              margin: "0 auto 4rem auto",
+              margin: "0 auto 2.5rem auto",
             }}
           >
             <span
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
                 color: "#15803d",
                 fontWeight: 800,
-                letterSpacing: "1.5px",
+                letterSpacing: "1px",
                 textTransform: "uppercase",
               }}
             >
@@ -606,18 +623,16 @@ export default function App() {
             </span>
             <h2
               style={{
-                fontSize: "2.4rem",
+                fontSize: "clamp(1.6rem, 4vw, 2.2rem)",
                 fontWeight: 900,
-                margin: "12px 0 1.25rem 0",
+                margin: "8px 0 1rem 0",
                 color: "#14532d",
                 lineHeight: 1.2,
               }}
             >
               Buruan Sae RW 19 Antapani Bukan Sekadar Kebun
             </h2>
-            <p
-              style={{ color: "#4d7c0f", fontSize: "1.1rem", lineHeight: 1.7 }}
-            >
+            <p style={{ color: "#4d7c0f", fontSize: "1rem", lineHeight: 1.6 }}>
               Kami mengubah ruang kosong perkotaan menjadi oasis produktif yang
               menyediakan pangan organik, udara bersih, dan ruang interaksi bagi
               warga. Setiap jengkal tanah berharga untuk bumi yang lebih baik.
@@ -627,48 +642,48 @@ export default function App() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: "2.5rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "1.5rem",
             }}
           >
             <div
               style={{
                 backgroundColor: "#f0fdf4",
                 border: "1px solid #bbf7d0",
-                borderRadius: "20px",
-                padding: "2rem",
+                borderRadius: "18px",
+                padding: "1.5rem",
               }}
             >
               <div
                 style={{
                   backgroundColor: "#15803d",
                   color: "#fff",
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "14px",
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: "1.25rem",
+                  marginBottom: "1rem",
                 }}
               >
-                <Sprout size={24} />
+                <Sprout size={22} />
               </div>
               <h3
                 style={{
-                  fontSize: "1.25rem",
+                  fontSize: "1.15rem",
                   fontWeight: 800,
                   color: "#14532d",
-                  marginBottom: "0.75rem",
+                  marginBottom: "0.5rem",
                 }}
               >
                 Berkelanjutan
               </h3>
               <p
                 style={{
-                  fontSize: "0.95rem",
+                  fontSize: "0.9rem",
                   color: "#3f6212",
-                  lineHeight: 1.6,
+                  lineHeight: 1.5,
                   margin: 0,
                 }}
               >
@@ -681,40 +696,40 @@ export default function App() {
               style={{
                 backgroundColor: "#f0fdf4",
                 border: "1px solid #bbf7d0",
-                borderRadius: "20px",
-                padding: "2rem",
+                borderRadius: "18px",
+                padding: "1.5rem",
               }}
             >
               <div
                 style={{
                   backgroundColor: "#15803d",
                   color: "#fff",
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "14px",
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: "1.25rem",
+                  marginBottom: "1rem",
                 }}
               >
-                <Users size={24} />
+                <Users size={22} />
               </div>
               <h3
                 style={{
-                  fontSize: "1.25rem",
+                  fontSize: "1.15rem",
                   fontWeight: 800,
                   color: "#14532d",
-                  marginBottom: "0.75rem",
+                  marginBottom: "0.5rem",
                 }}
               >
                 Pemberdayaan Warga
               </h3>
               <p
                 style={{
-                  fontSize: "0.95rem",
+                  fontSize: "0.9rem",
                   color: "#3f6212",
-                  lineHeight: 1.6,
+                  lineHeight: 1.5,
                   margin: 0,
                 }}
               >
@@ -727,40 +742,40 @@ export default function App() {
               style={{
                 backgroundColor: "#f0fdf4",
                 border: "1px solid #bbf7d0",
-                borderRadius: "20px",
-                padding: "2rem",
+                borderRadius: "18px",
+                padding: "1.5rem",
               }}
             >
               <div
                 style={{
                   backgroundColor: "#15803d",
                   color: "#fff",
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "14px",
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: "1.25rem",
+                  marginBottom: "1rem",
                 }}
               >
-                <Store size={24} />
+                <Store size={22} />
               </div>
               <h3
                 style={{
-                  fontSize: "1.25rem",
+                  fontSize: "1.15rem",
                   fontWeight: 800,
                   color: "#14532d",
-                  marginBottom: "0.75rem",
+                  marginBottom: "0.5rem",
                 }}
               >
                 Kemandirian Pangan
               </h3>
               <p
                 style={{
-                  fontSize: "0.95rem",
+                  fontSize: "0.9rem",
                   color: "#3f6212",
-                  lineHeight: 1.6,
+                  lineHeight: 1.5,
                   margin: 0,
                 }}
               >
@@ -772,12 +787,12 @@ export default function App() {
         </div>
       </section>
 
-      {/* 4. LOCATIONS SECTION WITH STATIC MAP */}
+      {/* 4. LOCATIONS SECTION WITH MOBILE PROPORTIONAL MAP */}
       <section
         id="locations"
         style={{
-          scrollMarginTop: "150px",
-          padding: "4rem 2.5rem",
+          scrollMarginTop: "120px",
+          padding: "3.5rem 1.25rem",
           maxWidth: "1280px",
           margin: "0 auto",
         }}
@@ -786,16 +801,16 @@ export default function App() {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-end",
-            marginBottom: "2rem",
+            alignItems: "flex-start",
+            marginBottom: "1.5rem",
             flexWrap: "wrap",
-            gap: "1rem",
+            gap: "0.75rem",
           }}
         >
           <div>
             <div
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
                 color: "#15803d",
                 fontWeight: 800,
                 letterSpacing: "1px",
@@ -806,7 +821,7 @@ export default function App() {
             </div>
             <h2
               style={{
-                fontSize: "2.2rem",
+                fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
                 fontWeight: 900,
                 margin: "4px 0 0 0",
                 color: "#14532d",
@@ -819,9 +834,9 @@ export default function App() {
             style={{
               backgroundColor: "#dcfce7",
               color: "#15803d",
-              padding: "8px 16px",
-              borderRadius: "12px",
-              fontSize: "0.85rem",
+              padding: "6px 12px",
+              borderRadius: "10px",
+              fontSize: "0.8rem",
               fontWeight: 700,
               border: "1px solid #bbf7d0",
               display: "flex",
@@ -829,26 +844,25 @@ export default function App() {
               gap: "6px",
             }}
           >
-            <MapPin size={16} /> Area Antapani Kidul, Bandung
+            <MapPin size={14} /> Area Antapani Kidul
           </div>
         </div>
 
         <div
           style={{
             backgroundColor: "#ffffff",
-            borderRadius: "24px",
+            borderRadius: "20px",
             border: "1px solid #dcfce7",
-            padding: "1.5rem",
+            padding: "1rem",
             boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
           }}
         >
-          {/* Static Map Container (Bukan iframe interaktif lagi) */}
           <div
             style={{
               position: "relative",
               width: "100%",
-              paddingTop: "42%",
-              borderRadius: "16px",
+              paddingTop: "56.25%",
+              borderRadius: "14px",
               overflow: "hidden",
               border: "1px solid #bbf7d0",
             }}
@@ -868,13 +882,13 @@ export default function App() {
             <div
               style={{
                 position: "absolute",
-                top: "16px",
-                left: "16px",
+                top: "10px",
+                left: "10px",
                 backgroundColor: "rgba(20,83,45,0.9)",
                 color: "#ffffff",
-                padding: "8px 16px",
-                borderRadius: "12px",
-                fontSize: "0.8rem",
+                padding: "6px 12px",
+                borderRadius: "10px",
+                fontSize: "0.75rem",
                 fontWeight: 800,
                 backdropFilter: "blur(4px)",
                 display: "flex",
@@ -882,26 +896,25 @@ export default function App() {
                 gap: "6px",
               }}
             >
-              <Compass size={16} /> PETA STATIK RESMI WILAYAH RW 19
+              <Compass size={14} /> PETA STATIK RESMI RW 19
             </div>
           </div>
 
-          {/* Keterangan Batas Wilayah & Sektor Tani */}
           <div
             style={{
-              marginTop: "1.75rem",
-              padding: "1.25rem",
+              marginTop: "1.25rem",
+              padding: "1rem",
               backgroundColor: "#f0fdf4",
-              borderRadius: "16px",
+              borderRadius: "14px",
               border: "1px solid #bbf7d0",
             }}
           >
             <div
               style={{
-                fontSize: "0.9rem",
+                fontSize: "0.85rem",
                 fontWeight: 800,
                 color: "#15803d",
-                marginBottom: "1rem",
+                marginBottom: "0.75rem",
               }}
             >
               📍 LEGENDA SEKTOR KEBUN & BATAS WILAYAH RW 19
@@ -909,21 +922,21 @@ export default function App() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: "1rem",
+                gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                gap: "0.75rem",
               }}
             >
               <div
                 style={{
                   backgroundColor: "#fff",
-                  padding: "12px 16px",
-                  borderRadius: "12px",
+                  padding: "10px 12px",
+                  borderRadius: "10px",
                   border: "1px solid #bbf7d0",
                 }}
               >
                 <span
                   style={{
-                    fontSize: "0.75rem",
+                    fontSize: "0.7rem",
                     color: "#65a30d",
                     fontWeight: 800,
                   }}
@@ -932,7 +945,7 @@ export default function App() {
                 </span>
                 <div
                   style={{
-                    fontSize: "0.95rem",
+                    fontSize: "0.85rem",
                     fontWeight: 800,
                     color: "#14532d",
                   }}
@@ -943,14 +956,14 @@ export default function App() {
               <div
                 style={{
                   backgroundColor: "#fff",
-                  padding: "12px 16px",
-                  borderRadius: "12px",
+                  padding: "10px 12px",
+                  borderRadius: "10px",
                   border: "1px solid #bbf7d0",
                 }}
               >
                 <span
                   style={{
-                    fontSize: "0.75rem",
+                    fontSize: "0.7rem",
                     color: "#65a30d",
                     fontWeight: 800,
                   }}
@@ -959,7 +972,7 @@ export default function App() {
                 </span>
                 <div
                   style={{
-                    fontSize: "0.95rem",
+                    fontSize: "0.85rem",
                     fontWeight: 800,
                     color: "#14532d",
                   }}
@@ -970,14 +983,14 @@ export default function App() {
               <div
                 style={{
                   backgroundColor: "#fff",
-                  padding: "12px 16px",
-                  borderRadius: "12px",
+                  padding: "10px 12px",
+                  borderRadius: "10px",
                   border: "1px solid #bbf7d0",
                 }}
               >
                 <span
                   style={{
-                    fontSize: "0.75rem",
+                    fontSize: "0.7rem",
                     color: "#65a30d",
                     fontWeight: 800,
                   }}
@@ -986,7 +999,7 @@ export default function App() {
                 </span>
                 <div
                   style={{
-                    fontSize: "0.95rem",
+                    fontSize: "0.85rem",
                     fontWeight: 800,
                     color: "#14532d",
                   }}
@@ -997,14 +1010,14 @@ export default function App() {
               <div
                 style={{
                   backgroundColor: "#fff",
-                  padding: "12px 16px",
-                  borderRadius: "12px",
+                  padding: "10px 12px",
+                  borderRadius: "10px",
                   border: "1px solid #bbf7d0",
                 }}
               >
                 <span
                   style={{
-                    fontSize: "0.75rem",
+                    fontSize: "0.7rem",
                     color: "#65a30d",
                     fontWeight: 800,
                   }}
@@ -1013,7 +1026,7 @@ export default function App() {
                 </span>
                 <div
                   style={{
-                    fontSize: "0.95rem",
+                    fontSize: "0.85rem",
                     fontWeight: 800,
                     color: "#14532d",
                   }}
@@ -1030,15 +1043,15 @@ export default function App() {
       <section
         id="gallery"
         style={{
-          scrollMarginTop: "150px",
-          padding: "4rem 2.5rem",
+          scrollMarginTop: "120px",
+          padding: "3.5rem 1.25rem",
           maxWidth: "1280px",
           margin: "0 auto",
         }}
       >
         <div
           style={{
-            fontSize: "0.8rem",
+            fontSize: "0.75rem",
             color: "#15803d",
             fontWeight: 800,
             letterSpacing: "1px",
@@ -1049,9 +1062,9 @@ export default function App() {
         </div>
         <h2
           style={{
-            fontSize: "2.2rem",
+            fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
             fontWeight: 900,
-            margin: "4px 0 0.5rem 0",
+            margin: "4px 0 0.25rem 0",
             color: "#14532d",
           }}
         >
@@ -1060,8 +1073,8 @@ export default function App() {
         <p
           style={{
             color: "#4d7c0f",
-            fontSize: "1.05rem",
-            marginBottom: "2.5rem",
+            fontSize: "0.95rem",
+            marginBottom: "2rem",
           }}
         >
           Jelajahi keindahan dan kelimpahan hasil bumi dari kebun komunitas
@@ -1071,8 +1084,8 @@ export default function App() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-            gap: "2rem",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1.5rem",
           }}
         >
           {beritaList.map((item) => (
@@ -1081,7 +1094,7 @@ export default function App() {
               style={{
                 backgroundColor: "#ffffff",
                 border: "1px solid #dcfce7",
-                borderRadius: "20px",
+                borderRadius: "18px",
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
@@ -1091,11 +1104,11 @@ export default function App() {
               <img
                 src={item.image}
                 alt={item.judul}
-                style={{ width: "100%", height: "220px", objectFit: "cover" }}
+                style={{ width: "100%", height: "180px", objectFit: "cover" }}
               />
               <div
                 style={{
-                  padding: "1.75rem",
+                  padding: "1.25rem",
                   flexGrow: 1,
                   display: "flex",
                   flexDirection: "column",
@@ -1107,9 +1120,9 @@ export default function App() {
                     style={{
                       backgroundColor: "#dcfce7",
                       color: "#15803d",
-                      padding: "4px 12px",
-                      borderRadius: "12px",
-                      fontSize: "0.75rem",
+                      padding: "4px 10px",
+                      borderRadius: "10px",
+                      fontSize: "0.7rem",
                       fontWeight: 700,
                     }}
                   >
@@ -1117,9 +1130,9 @@ export default function App() {
                   </span>
                   <h3
                     style={{
-                      fontSize: "1.2rem",
+                      fontSize: "1.1rem",
                       fontWeight: 800,
-                      margin: "10px 0 6px 0",
+                      margin: "8px 0 4px 0",
                       color: "#14532d",
                     }}
                   >
@@ -1127,9 +1140,9 @@ export default function App() {
                   </h3>
                   <div
                     style={{
-                      fontSize: "0.8rem",
+                      fontSize: "0.75rem",
                       color: "#65a30d",
-                      marginBottom: "10px",
+                      marginBottom: "8px",
                       fontWeight: 600,
                     }}
                   >
@@ -1137,10 +1150,10 @@ export default function App() {
                   </div>
                   <p
                     style={{
-                      fontSize: "0.95rem",
+                      fontSize: "0.85rem",
                       color: "#3f6212",
-                      margin: "0 0 1.25rem 0",
-                      lineHeight: 1.6,
+                      margin: "0 0 1rem 0",
+                      lineHeight: 1.5,
                     }}
                   >
                     {item.desc}
@@ -1153,9 +1166,9 @@ export default function App() {
                     backgroundColor: "#f0fdf4",
                     color: "#15803d",
                     border: "1px solid #bbf7d0",
-                    padding: "10px 18px",
-                    borderRadius: "10px",
-                    fontSize: "0.85rem",
+                    padding: "8px 14px",
+                    borderRadius: "8px",
+                    fontSize: "0.8rem",
                     fontWeight: 700,
                     cursor: "pointer",
                     display: "inline-flex",
@@ -1164,8 +1177,7 @@ export default function App() {
                     alignSelf: "flex-start",
                   }}
                 >
-                  <Newspaper size={16} /> Lihat Detail Kegiatan{" "}
-                  <ArrowRight size={14} />
+                  <Newspaper size={15} /> Lihat Detail <ArrowRight size={14} />
                 </button>
               </div>
             </div>
@@ -1191,8 +1203,8 @@ export default function App() {
           <div
             style={{
               backgroundColor: "#ffffff",
-              borderRadius: "20px",
-              maxWidth: "550px",
+              borderRadius: "18px",
+              maxWidth: "500px",
               width: "100%",
               overflow: "hidden",
               boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
@@ -1202,16 +1214,16 @@ export default function App() {
             <img
               src={selectedBerita.image}
               alt={selectedBerita.judul}
-              style={{ width: "100%", height: "240px", objectFit: "cover" }}
+              style={{ width: "100%", height: "200px", objectFit: "cover" }}
             />
-            <div style={{ padding: "2rem" }}>
+            <div style={{ padding: "1.5rem" }}>
               <span
                 style={{
                   backgroundColor: "#dcfce7",
                   color: "#15803d",
-                  padding: "4px 12px",
-                  borderRadius: "12px",
-                  fontSize: "0.75rem",
+                  padding: "4px 10px",
+                  borderRadius: "10px",
+                  fontSize: "0.7rem",
                   fontWeight: 700,
                 }}
               >
@@ -1219,9 +1231,9 @@ export default function App() {
               </span>
               <h3
                 style={{
-                  fontSize: "1.4rem",
+                  fontSize: "1.25rem",
                   fontWeight: 900,
-                  margin: "10px 0 6px 0",
+                  margin: "8px 0 4px 0",
                   color: "#14532d",
                 }}
               >
@@ -1229,10 +1241,10 @@ export default function App() {
               </h3>
               <p
                 style={{
-                  fontSize: "1rem",
+                  fontSize: "0.9rem",
                   color: "#3f6212",
-                  lineHeight: 1.7,
-                  margin: "1rem 0",
+                  lineHeight: 1.6,
+                  margin: "0.75rem 0",
                 }}
               >
                 {selectedBerita.desc}
@@ -1244,8 +1256,8 @@ export default function App() {
                   backgroundColor: "#15803d",
                   color: "#fff",
                   border: "none",
-                  padding: "12px 24px",
-                  borderRadius: "10px",
+                  padding: "10px 20px",
+                  borderRadius: "8px",
                   fontWeight: 700,
                   cursor: "pointer",
                   width: "100%",
@@ -1263,14 +1275,14 @@ export default function App() {
         style={{
           backgroundColor: "#14532d",
           color: "#ffffff",
-          padding: "5rem 2.5rem",
-          marginTop: "3rem",
+          padding: "3.5rem 1.25rem",
+          marginTop: "2rem",
         }}
       >
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div
             style={{
-              fontSize: "0.8rem",
+              fontSize: "0.75rem",
               color: "#86efac",
               fontWeight: 800,
               letterSpacing: "1px",
@@ -1281,9 +1293,9 @@ export default function App() {
           </div>
           <h2
             style={{
-              fontSize: "2.2rem",
+              fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
               fontWeight: 900,
-              margin: "4px 0 2rem 0",
+              margin: "4px 0 1.5rem 0",
             }}
           >
             CCTV Area Buruan Sae RW 19
@@ -1292,8 +1304,8 @@ export default function App() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-              gap: "2rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "1.5rem",
             }}
           >
             {cctvList.map((cam) => (
@@ -1302,22 +1314,22 @@ export default function App() {
                 style={{
                   backgroundColor: "#166534",
                   border: "1px solid #1f763e",
-                  borderRadius: "20px",
-                  padding: "1.5rem",
+                  borderRadius: "18px",
+                  padding: "1.25rem",
                 }}
               >
                 <div
                   style={{
                     position: "relative",
-                    height: "200px",
+                    height: "180px",
                     backgroundColor: "#000000",
-                    borderRadius: "14px",
+                    borderRadius: "12px",
                     overflow: "hidden",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     cursor: "pointer",
-                    marginBottom: "1.25rem",
+                    marginBottom: "1rem",
                   }}
                   onClick={() => setSelectedCctv(cam)}
                 >
@@ -1334,14 +1346,14 @@ export default function App() {
                   <span
                     style={{
                       position: "absolute",
-                      top: "12px",
-                      left: "12px",
+                      top: "10px",
+                      left: "10px",
                       backgroundColor: "#ef4444",
                       color: "#fff",
-                      fontSize: "0.75rem",
+                      fontSize: "0.7rem",
                       fontWeight: 800,
-                      padding: "4px 10px",
-                      borderRadius: "12px",
+                      padding: "3px 8px",
+                      borderRadius: "10px",
                     }}
                   >
                     ● LIVE
@@ -1350,23 +1362,23 @@ export default function App() {
                     style={{
                       position: "absolute",
                       backgroundColor: "rgba(21,128,61,0.9)",
-                      padding: "14px",
+                      padding: "12px",
                       borderRadius: "50%",
                     }}
                   >
-                    <Video size={30} color="#fff" />
+                    <Video size={24} color="#fff" />
                   </div>
                 </div>
                 <h4
                   style={{
-                    margin: "0 0 6px 0",
-                    fontSize: "1.15rem",
+                    margin: "0 0 4px 0",
+                    fontSize: "1.05rem",
                     fontWeight: 800,
                   }}
                 >
                   {cam.name}
                 </h4>
-                <p style={{ margin: 0, fontSize: "0.9rem", color: "#bbf7d0" }}>
+                <p style={{ margin: 0, fontSize: "0.85rem", color: "#bbf7d0" }}>
                   📍 {cam.loc}
                 </p>
               </div>
@@ -1395,8 +1407,8 @@ export default function App() {
               backgroundColor: "#14532d",
               border: "1px solid #1f763e",
               color: "#fff",
-              borderRadius: "20px",
-              maxWidth: "650px",
+              borderRadius: "18px",
+              maxWidth: "550px",
               width: "100%",
               overflow: "hidden",
             }}
@@ -1405,14 +1417,14 @@ export default function App() {
             <img
               src={selectedCctv.img}
               alt={selectedCctv.name}
-              style={{ width: "100%", height: "320px", objectFit: "cover" }}
+              style={{ width: "100%", height: "250px", objectFit: "cover" }}
             />
-            <div style={{ padding: "2rem" }}>
+            <div style={{ padding: "1.5rem" }}>
               <h3
                 style={{
-                  fontSize: "1.3rem",
+                  fontSize: "1.2rem",
                   fontWeight: 900,
-                  margin: "0 0 6px 0",
+                  margin: "0 0 4px 0",
                 }}
               >
                 {selectedCctv.name}
@@ -1421,7 +1433,8 @@ export default function App() {
                 style={{
                   color: "#86efac",
                   fontWeight: 700,
-                  margin: "0 0 1.5rem 0",
+                  margin: "0 0 1.25rem 0",
+                  fontSize: "0.9rem",
                 }}
               >
                 📍 {selectedCctv.loc}
@@ -1433,8 +1446,8 @@ export default function App() {
                   backgroundColor: "#166534",
                   color: "#fff",
                   border: "none",
-                  padding: "12px 24px",
-                  borderRadius: "10px",
+                  padding: "10px 20px",
+                  borderRadius: "8px",
                   fontWeight: 700,
                   cursor: "pointer",
                   width: "100%",
@@ -1451,8 +1464,8 @@ export default function App() {
       <section
         id="contact"
         style={{
-          scrollMarginTop: "150px",
-          padding: "5rem 2.5rem",
+          scrollMarginTop: "120px",
+          padding: "3.5rem 1.25rem",
           maxWidth: "850px",
           margin: "0 auto",
         }}
@@ -1460,16 +1473,16 @@ export default function App() {
         <div
           style={{
             backgroundColor: "#ffffff",
-            borderRadius: "28px",
+            borderRadius: "24px",
             border: "1px solid #dcfce7",
-            padding: "3rem",
+            padding: "2rem 1.25rem",
             boxShadow: "0 20px 40px rgba(21,128,61,0.06)",
             textAlign: "center",
           }}
         >
           <span
             style={{
-              fontSize: "0.8rem",
+              fontSize: "0.75rem",
               color: "#15803d",
               fontWeight: 800,
               letterSpacing: "1px",
@@ -1480,9 +1493,9 @@ export default function App() {
           </span>
           <h2
             style={{
-              fontSize: "2.2rem",
+              fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
               fontWeight: 900,
-              margin: "6px 0 1rem 0",
+              margin: "6px 0 0.75rem 0",
               color: "#14532d",
             }}
           >
@@ -1491,10 +1504,10 @@ export default function App() {
           <p
             style={{
               color: "#4d7c0f",
-              fontSize: "1.05rem",
-              margin: "0 auto 2.5rem auto",
+              fontSize: "0.95rem",
+              margin: "0 auto 2rem auto",
               maxWidth: "650px",
-              lineHeight: 1.6,
+              lineHeight: 1.5,
             }}
           >
             Kirimkan aspirasi, pertanyaan, atau pendaftaran bergabung melalui
@@ -1506,16 +1519,16 @@ export default function App() {
               style={{
                 backgroundColor: "#dcfce7",
                 color: "#14532d",
-                padding: "1.5rem",
-                borderRadius: "16px",
+                padding: "1.25rem",
+                borderRadius: "14px",
                 fontWeight: 700,
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "10px",
-                fontSize: "1.05rem",
+                gap: "8px",
+                fontSize: "0.95rem",
               }}
             >
-              <CheckCircle2 size={24} /> Pendaftaran / Pesan Anda berhasil
+              <CheckCircle2 size={20} /> Pendaftaran / Pesan Anda berhasil
               dikirim ke pengurus RW 19!
             </div>
           ) : (
@@ -1524,17 +1537,17 @@ export default function App() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "1.5rem",
+                gap: "1.25rem",
                 textAlign: "left",
               }}
             >
               <div>
                 <label
                   style={{
-                    fontSize: "0.9rem",
+                    fontSize: "0.85rem",
                     fontWeight: 800,
                     display: "block",
-                    marginBottom: "8px",
+                    marginBottom: "6px",
                     color: "#14532d",
                   }}
                 >
@@ -1548,12 +1561,12 @@ export default function App() {
                   required
                   style={{
                     width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
                     border: "1px solid #bbf7d0",
                     boxSizing: "border-box",
                     backgroundColor: "#f0fdf4",
-                    fontSize: "1rem",
+                    fontSize: "0.95rem",
                     outline: "none",
                   }}
                 />
@@ -1562,10 +1575,10 @@ export default function App() {
               <div>
                 <label
                   style={{
-                    fontSize: "0.9rem",
+                    fontSize: "0.85rem",
                     fontWeight: 800,
                     display: "block",
-                    marginBottom: "8px",
+                    marginBottom: "6px",
                     color: "#14532d",
                   }}
                 >
@@ -1576,12 +1589,12 @@ export default function App() {
                   onChange={(e) => setRt(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
                     border: "1px solid #bbf7d0",
                     boxSizing: "border-box",
                     backgroundColor: "#f0fdf4",
-                    fontSize: "1rem",
+                    fontSize: "0.95rem",
                     outline: "none",
                   }}
                 >
@@ -1595,29 +1608,29 @@ export default function App() {
               <div>
                 <label
                   style={{
-                    fontSize: "0.9rem",
+                    fontSize: "0.85rem",
                     fontWeight: 800,
                     display: "block",
-                    marginBottom: "8px",
+                    marginBottom: "6px",
                     color: "#14532d",
                   }}
                 >
                   Pesan / Keinginan Bergabung
                 </label>
                 <textarea
-                  placeholder="Tuliskan pesan atau ketertarikan untuk bergabung..."
+                  placeholder="Tuliskan pesan Anda..."
                   value={pesan}
                   onChange={(e) => setPesan(e.target.value)}
                   required
                   rows={4}
                   style={{
                     width: "100%",
-                    padding: "14px 16px",
-                    borderRadius: "12px",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
                     border: "1px solid #bbf7d0",
                     boxSizing: "border-box",
                     backgroundColor: "#f0fdf4",
-                    fontSize: "1rem",
+                    fontSize: "0.95rem",
                     outline: "none",
                   }}
                 />
@@ -1629,20 +1642,20 @@ export default function App() {
                   backgroundColor: "#15803d",
                   color: "#fff",
                   border: "none",
-                  padding: "16px",
-                  borderRadius: "12px",
+                  padding: "14px",
+                  borderRadius: "10px",
                   fontWeight: 800,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "10px",
-                  fontSize: "1.05rem",
-                  marginTop: "0.5rem",
+                  gap: "8px",
+                  fontSize: "1rem",
+                  marginTop: "0.25rem",
                   boxShadow: "0 6px 20px rgba(21,128,61,0.25)",
                 }}
               >
-                <Send size={18} /> Gabung Gerakan Sekarang
+                <Send size={16} /> Gabung Gerakan Sekarang
               </button>
             </form>
           )}
@@ -1654,9 +1667,9 @@ export default function App() {
         style={{
           backgroundColor: "#14532d",
           color: "#dcfce7",
-          padding: "4rem 2.5rem 2.5rem 2.5rem",
-          marginTop: "5rem",
-          fontSize: "0.9rem",
+          padding: "3rem 1.25rem 2rem 1.25rem",
+          marginTop: "3rem",
+          fontSize: "0.85rem",
         }}
       >
         <div
@@ -1664,20 +1677,20 @@ export default function App() {
             maxWidth: "1280px",
             margin: "0 auto",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "3rem",
-            marginBottom: "3rem",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: "2rem",
+            marginBottom: "2rem",
             borderBottom: "1px solid #1f763e",
-            paddingBottom: "3rem",
+            paddingBottom: "2rem",
           }}
         >
           <div>
             <h3
               style={{
-                fontSize: "1.2rem",
+                fontSize: "1.1rem",
                 fontWeight: 900,
                 color: "#fff",
-                marginBottom: "1rem",
+                marginBottom: "0.75rem",
               }}
             >
               Buruan Sae RW 19 Antapani
@@ -1686,8 +1699,8 @@ export default function App() {
               style={{
                 margin: 0,
                 color: "#bbf7d0",
-                lineHeight: 1.6,
-                fontSize: "0.95rem",
+                lineHeight: 1.5,
+                fontSize: "0.85rem",
               }}
             >
               Nurturing the earth, feeding the community. Gerakan urban farming
@@ -1697,54 +1710,54 @@ export default function App() {
           <div>
             <h4
               style={{
-                fontSize: "1rem",
+                fontSize: "0.95rem",
                 fontWeight: 900,
                 color: "#fff",
-                marginBottom: "1rem",
+                marginBottom: "0.75rem",
               }}
             >
               Tautan & Komunitas
             </h4>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
             >
               <span
                 style={{
                   color: "#bbf7d0",
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
+                  gap: "6px",
                   cursor: "pointer",
                 }}
               >
-                <Globe size={16} /> Instagram RW 19
+                <Globe size={15} /> Instagram RW 19
               </span>
               <span
                 style={{
                   color: "#bbf7d0",
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
+                  gap: "6px",
                   cursor: "pointer",
                 }}
               >
-                <Globe size={16} /> Kanal YouTube Resmi
+                <Globe size={15} /> Kanal YouTube Resmi
               </span>
             </div>
           </div>
           <div>
             <h4
               style={{
-                fontSize: "1rem",
+                fontSize: "0.95rem",
                 fontWeight: 900,
                 color: "#fff",
-                marginBottom: "1rem",
+                marginBottom: "0.75rem",
               }}
             >
               Kebijakan
             </h4>
             <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
             >
               <span style={{ color: "#bbf7d0", cursor: "pointer" }}>
                 Community Guidelines
@@ -1764,10 +1777,10 @@ export default function App() {
             justifyContent: "space-between",
             alignItems: "center",
             flexWrap: "wrap",
-            gap: "1.5rem",
+            gap: "1rem",
           }}
         >
-          <p style={{ margin: 0, color: "#bbf7d0", fontSize: "0.85rem" }}>
+          <p style={{ margin: 0, color: "#bbf7d0", fontSize: "0.8rem" }}>
             © 2026 Buruan Sae RW 19 Antapani. Nurturing the earth, feeding the
             community.
           </p>
@@ -1778,9 +1791,9 @@ export default function App() {
               background: "transparent",
               color: "#86efac",
               border: "1px solid rgba(134,239,172,0.4)",
-              padding: "8px 16px",
-              borderRadius: "8px",
-              fontSize: "0.8rem",
+              padding: "6px 12px",
+              borderRadius: "6px",
+              fontSize: "0.75rem",
               fontWeight: 700,
               cursor: "pointer",
             }}
