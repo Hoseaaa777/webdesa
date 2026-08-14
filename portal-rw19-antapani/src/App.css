@@ -711,3 +711,30 @@ body {
     display: flex; /* Tampilkan tombol hamburger (garis 3) di HP */
   }
 }
+
+/* Ukuran Standar (Desktop/Laptop) */
+.map-pin-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+}
+.map-pin-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Otomatis Menciut Halus saat di Layar HP/Mobile */
+@media (max-width: 640px) {
+  .map-pin-badge {
+    font-size: 0.45rem !important; /* Teks mengecil pas */
+    padding: 1px 4px !important;
+    border-radius: 4px !important;
+  }
+  .map-pin-icon {
+    width: 18px !important; /* Lingkaran pin mengecil */
+    height: 18px !important;
+  }
+  .map-pin-icon svg {
+    width: 10px !important; /* Icon di dalam pin mengecil */
+    height: 10px !important;
+  }
+}
