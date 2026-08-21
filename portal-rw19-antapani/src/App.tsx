@@ -339,7 +339,6 @@ export default function App() {
         minHeight: "100vh",
       }}
     >
-      {/* 1. NAVBAR */}
       {/* 1. NAVBAR RESPONSIF */}
       <header
         style={{
@@ -361,7 +360,7 @@ export default function App() {
             justifyContent: "space-between",
           }}
         >
-          {/* Logo & Judul */}
+          {/* Logo Brand */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div
               style={{
@@ -408,10 +407,11 @@ export default function App() {
             <a href="#statistik">Statistik</a>
             <a href="#locations">Locations</a>
             <a href="#gallery">Gallery</a>
+            <a href="#cctv">CCTV</a>
             <a href="#contact">Contact</a>
           </nav>
 
-          {/* Tombol Aksi Kanan (Admin & Hamburger Mobile) */}
+          {/* Action Button */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <button
               type="button"
@@ -433,7 +433,7 @@ export default function App() {
               <Lock size={14} color="#15803d" /> Admin
             </button>
 
-            {/* Tombol Garis 3 (Hanya Tampil di HP/Mobile) */}
+            {/* Hamburger Button Mobile */}
             <button
               type="button"
               className="mobile-menu-btn"
@@ -455,7 +455,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dropdown Menu Saat Garis 3 Diklik di Mobile */}
+        {/* Dropdown Menu Mobile */}
         {isMenuOpen && (
           <nav
             style={{
@@ -503,6 +503,13 @@ export default function App() {
               style={{ color: "#3f6212", textDecoration: "none" }}
             >
               Gallery
+            </a>
+            <a
+              href="#cctv"
+              onClick={() => setIsMenuOpen(false)}
+              style={{ color: "#3f6212", textDecoration: "none" }}
+            >
+              CCTV
             </a>
             <a
               href="#contact"
@@ -2395,7 +2402,9 @@ export default function App() {
 
       {/* 7. CCTV MONITORING SECTION (1 BARIS SCROLL KE SAMPING KANAN) */}
       <section
+        id="cctv"
         style={{
+          scrollMarginTop: "120px",
           backgroundColor: "#14532d",
           color: "#ffffff",
           padding: "3.5rem 1.25rem",
