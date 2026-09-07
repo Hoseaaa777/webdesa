@@ -95,7 +95,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
 
       {/* Panel Tombol Filter Layer Peta */}
       <div
-        className="filter-btn-group"
         style={{
           backgroundColor: "#ffffff",
           border: "1px solid #dcfce7",
@@ -207,7 +206,7 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
         </button>
       </div>
 
-      {/* Container Peta dengan Rasio Presisi */}
+      {/* Container Peta */}
       <div
         style={{
           backgroundColor: "#ffffff",
@@ -217,65 +216,47 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
           boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
         }}
       >
+        {/* Rasio 1408/1494 sesuai potongan Claude */}
         <div
           style={{
             position: "relative",
             width: "100%",
-            aspectRatio: "1/1",
+            aspectRatio: "1408 / 1494",
             maxHeight: "800px",
+            maxWidth: "1000px",
+            margin: "0 auto",
             borderRadius: "14px",
             overflow: "hidden",
             border: "1px solid #bbf7d0",
             backgroundColor: "#ffffff",
           }}
         >
-          {/* GAMBAR PETA LOKAL DARI peta.jpeg */}
+          {/* Peta otomatis terpotong presisi via CSS tanpa menyentuh file asli */}
           <img
             src={petaImg}
             alt="Peta Wilayah RW 19 Antapani"
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
+              top: "-2.677%",
+              left: "-8.239%",
+              width: "113.636%",
+              height: "107.095%",
+              maxWidth: "none",
+              display: "block",
             }}
           />
 
-          <div
-            className="map-compass-badge"
-            style={{
-              position: "absolute",
-              top: "10px",
-              left: "10px",
-              backgroundColor: "rgba(20,83,45,0.9)",
-              color: "#ffffff",
-              padding: "6px 12px",
-              borderRadius: "10px",
-              fontSize: "0.75rem",
-              fontWeight: 800,
-              backdropFilter: "blur(4px)",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              zIndex: 20,
-            }}
-          >
-            <Compass size={14} /> PETA SITES & LAYER SEKTOR RW 19
-          </div>
-
-          {/* LAYER OVERLAY AREA RT TRANSPARAN DI ATAS peta.jpeg */}
+          {/* LAYER OVERLAY AREA RT (HASIL HITUNGAN CLAUDE) */}
           {showAreaRt && (
             <>
               {/* Area RT 01 */}
               <div
                 style={{
                   position: "absolute",
-                  top: "3%",
-                  left: "22%",
-                  width: "28%",
-                  height: "24%",
+                  top: "0.54%",
+                  left: "1%",
+                  width: "48%",
+                  height: "25.7%",
                   backgroundColor: "rgba(34, 197, 94, 0.22)",
                   clipPath:
                     "polygon(0 1%, 100% 17%, 100% 100%, 50% 100%, 1% 30%)",
@@ -288,7 +269,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="rt-overlay-label"
                   style={{
                     backgroundColor: "#15803d",
                     color: "#fff",
@@ -306,10 +286,10 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "10%",
-                  left: "50%",
-                  width: "24%",
-                  height: "36%",
+                  top: "8.03%",
+                  left: "48.58%",
+                  width: "40%",
+                  height: "38.55%",
                   backgroundColor: "rgba(59, 130, 246, 0.22)",
                   clipPath: "polygon(0 1%, 100% 15%, 100% 57%, 0 47%)",
                   borderRadius: "14px",
@@ -321,7 +301,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="rt-overlay-label"
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#fff",
@@ -339,10 +318,10 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "30%",
-                  left: "59%",
-                  width: "19%",
-                  height: "57%",
+                  top: "29.45%",
+                  left: "67%",
+                  width: "28.59%",
+                  height: "61.04%",
                   backgroundColor: "rgba(130, 97, 0, 0.22)",
                   clipPath:
                     "polygon(0 1%, 63% 0, 77% 13%, 67% 26%, 100% 44%, 75% 69%, 43% 70%, 9% 32%)",
@@ -355,7 +334,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="rt-overlay-label"
                   style={{
                     backgroundColor: "#ca8a04",
                     color: "#fff",
@@ -373,10 +351,10 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "70%",
-                  left: "66%",
-                  width: "10%",
-                  height: "24%",
+                  top: "72.29%",
+                  left: "77.76%",
+                  width: "17.36%",
+                  height: "25.7%",
                   backgroundColor: "rgba(168, 85, 247, 0.22)",
                   borderRadius: "0px",
                   display: "flex",
@@ -387,7 +365,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="rt-overlay-label"
                   style={{
                     backgroundColor: "#9333ea",
                     color: "#fff",
@@ -403,15 +380,15 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
             </>
           )}
 
-          {/* 1. LAYER PIN KEBUN BURUAN SAE (HIJAU) */}
+          {/* 1. LAYER PIN KEBUN (HASIL HITUNGAN CLAUDE) */}
           {showKebun && (
             <>
               {/* Kebun Utama RT 01 */}
               <div
                 style={{
                   position: "absolute",
-                  top: "14%",
-                  left: "28%",
+                  top: "12.32%",
+                  left: "23.58%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -421,7 +398,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#15803d",
                     color: "#fff",
@@ -437,7 +413,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   Kebun Utama RT 01
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#15803d",
                     color: "#fff",
@@ -460,8 +435,8 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "24%",
-                  left: "62%",
+                  top: "23.03%",
+                  left: "62.22%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -471,7 +446,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#15803d",
                     color: "#fff",
@@ -487,7 +461,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   Green House RT 02
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#15803d",
                     color: "#fff",
@@ -510,8 +483,8 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "58%",
-                  left: "70%",
+                  top: "59.44%",
+                  left: "77.31%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -521,7 +494,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#15803d",
                     color: "#fff",
@@ -537,7 +509,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   Hydroponic RT 03
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#15803d",
                     color: "#fff",
@@ -558,15 +529,15 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
             </>
           )}
 
-          {/* 2. LAYER PIN MASJID (BIRU) */}
+          {/* 2. LAYER PIN MASJID (HASIL HITUNGAN CLAUDE) */}
           {showMasjid && (
             <>
               {/* Masjid Al-Ikhlas */}
               <div
                 style={{
                   position: "absolute",
-                  top: "12%",
-                  left: "48%",
+                  top: "10.17%",
+                  left: "46.31%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -576,7 +547,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#fff",
@@ -592,7 +562,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   Masjid Al-Ikhlas
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#fff",
@@ -615,8 +584,8 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "56%",
-                  left: "73%",
+                  top: "57.3%",
+                  left: "79.72%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -626,7 +595,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#fff",
@@ -642,7 +610,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   Masjid Nurul Huda
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#fff",
@@ -665,8 +632,8 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "78%",
-                  left: "70%",
+                  top: "80.86%",
+                  left: "89.31%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -676,7 +643,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#fff",
@@ -692,7 +658,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   Masjid Ar-Rahman
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#fff",
@@ -713,15 +678,15 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
             </>
           )}
 
-          {/* 3. LAYER PIN SEKOLAH (KUNING / EMAS) */}
+          {/* 3. LAYER PIN SEKOLAH (HASIL HITUNGAN CLAUDE) */}
           {showSekolah && (
             <>
               {/* PAUD / TK Antapani */}
               <div
                 style={{
                   position: "absolute",
-                  top: "22%",
-                  left: "68%",
+                  top: "20.88%",
+                  left: "69.03%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -731,7 +696,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#ca8a04",
                     color: "#fff",
@@ -747,7 +711,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   PAUD / TK Antapani
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#ca8a04",
                     color: "#fff",
@@ -773,8 +736,8 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: "86%",
-                  left: "72%",
+                  top: "89.42%",
+                  left: "79.58%",
                   transform: "translate(-50%, -100%)",
                   display: "flex",
                   flexDirection: "column",
@@ -784,7 +747,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                 }}
               >
                 <span
-                  className="map-pin-label"
                   style={{
                     backgroundColor: "#ca8a04",
                     color: "#fff",
@@ -800,7 +762,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
                   SD Negeri Antapani
                 </span>
                 <div
-                  className="map-pin-icon"
                   style={{
                     backgroundColor: "#ca8a04",
                     color: "#fff",
@@ -846,7 +807,6 @@ export const LocationsSection: React.FC<LocationsSectionProps> = ({
             📍 LEGENDA KETERANGAN SEKTOR & LOKASI
           </div>
           <div
-            className="map-legend-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
